@@ -53,11 +53,22 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
     try {
-        const { productName, sku, purchasePrice, sellingPrice, taxRate, stockQuantity, minimumStock, status } = req.body;
+        const {
+            productName,
+            sku,
+            category,
+            purchasePrice,
+            sellingPrice,
+            taxRate,
+            stockQuantity,
+            minimumStock,
+            status
+        } = req.body;
 
         const product = await Product.create({
             productName,
             sku,
+            category,
             purchasePrice,
             sellingPrice,
             taxRate,
@@ -72,10 +83,15 @@ const createProduct = async (req, res) => {
         });
     } catch (error) {
         if (error.code === 11000) {
-            return res.status(400).json({ message: "SKU already exists" });
+            return res.status(400).json({
+                message: "SKU already exists"
+            });
         }
 
-        return res.status(500).json({ message: "Failed to create product", error: error.message });
+        return res.status(500).json({
+            message: "Failed to create product",
+            error: error.message
+        });
     }
 };
 
