@@ -1,14 +1,13 @@
 import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Products from "./pages/Products";
-
+import Categories from "./pages/Categories";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("products");
 
   return (
     <div className="app">
-
       <Navbar
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
@@ -19,7 +18,6 @@ function App() {
 
         {currentPage === "categories" && <Categories />}
       </main>
-
     </div>
   );
 }
