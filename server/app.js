@@ -3,6 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 
 const productRoutes = require("./routes/productRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 
 dotenv.config();
 
@@ -21,5 +22,6 @@ app.get("/", (req, res) => {
 
 // Product routes
 app.use("/api/products", productRoutes);
+app.use("/api/categories", categoryRoutes);
 
 module.exports = app;
