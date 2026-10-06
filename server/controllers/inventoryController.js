@@ -24,6 +24,71 @@ const formatInventoryItem = (product) => {
         updatedAt: product.updatedAt
     };
 };
+const createInventoryItems = async (req, res) => {
+    try {
+        const payload = Array.isArray(req.body) ? req.body : [req.body];
+
+        if (!payload.length || payload.some((item) => !item)) {
+            return res.status(400).json({ message: "At least one inventory item is required" });
+        }
+
+        const createdItems = [];
+
+        for (const item of payload) {
+            const {
+                productName,
+                sku,
+                category,
+                purchasePrice,
+                sellingPrice,
+                taxRate,
+                stockQuantity,
+                minimumStock,
+                status
+            } = item;
+
+            if (!productName || !sku || !category) {
+                return res.status(400).json({
+                    message: "productName, sku, and category are required"
+                });
+            }
+
+            const product = await Product.create({
+                productName,
+                sku,
+                category,
+                purchasePrice,
+                sellingPrice,
+                taxRate,
+                stockQuantity,
+                minimumStock,
+                status
+            });
+
+            createdItems.push(formatInventoryItem(product));
+        }
+
+        if (createdItems.length === 1) {
+            return res.status(201).json({
+                message: "Inventory item created successfully",
+                item: createdItems[0]
+            });
+        }
+
+        return res.status(201).json({
+            message: "Inventory items created successfully",
+            items: createdItems
+        });
+    } catch (error) {
+        if (error.code === 11000) {
+            return res.status(400).json({ message: "SKU already exists" });
+        }
+
+        return res.status(500).json({ message: "Failed to create inventory item(s)", error: error.message });
+    }
+};
+
+const createInventoryItem = createInventoryItems;
 
 const getInventoryItems = async (req, res) => {
     try {
@@ -114,37 +179,6 @@ const getInventorySummary = async (req, res) => {
     }
 };
 
-const createInventoryItem = async (req, res) => {
-    try {
-        const { productName, sku, purchasePrice, sellingPrice, taxRate, stockQuantity, minimumStock, status } = req.body;
-
-        if (!productName || !sku) {
-            return res.status(400).json({ message: "productName and sku are required" });
-        }
-
-        const product = await Product.create({
-            productName,
-            sku,
-            purchasePrice,
-            sellingPrice,
-            taxRate,
-            stockQuantity,
-            minimumStock,
-            status
-        });
-
-        return res.status(201).json({
-            message: "Inventory item created successfully",
-            item: formatInventoryItem(product)
-        });
-    } catch (error) {
-        if (error.code === 11000) {
-            return res.status(400).json({ message: "SKU already exists" });
-        }
-
-        return res.status(500).json({ message: "Failed to create inventory item", error: error.message });
-    }
-};
 
 const updateInventoryItem = async (req, res) => {
     try {
@@ -243,6 +277,7 @@ module.exports = {
     getLowStockItems,
     getInventorySummary,
     createInventoryItem,
+    createInventoryItems,
     updateInventoryItem,
     adjustInventory,
     deleteInventoryItem

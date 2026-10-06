@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 
 const productRoutes = require("./routes/productRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
+const inventoryRoutes = require("./routes/inventoryRoutes");
 
 dotenv.config();
 
@@ -23,5 +24,6 @@ app.get("/", (req, res) => {
 // Product routes
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/inventory", inventoryRoutes);
 
 module.exports = app;

@@ -5,6 +5,7 @@ const {
     getLowStockItems,
     getInventorySummary,
     createInventoryItem,
+    createInventoryItems,
     updateInventoryItem,
     adjustInventory,
     deleteInventoryItem
@@ -17,6 +18,7 @@ router.get("/low-stock", getLowStockItems);
 router.get("/", getInventoryItems);
 router.get("/:id", getInventoryItemById);
 router.post("/", createInventoryItem);
+router.post("/bulk", createInventoryItems);
 router.patch("/adjust", adjustInventory);
 router.put("/:id", updateInventoryItem);
 router.delete("/:id", deleteInventoryItem);
