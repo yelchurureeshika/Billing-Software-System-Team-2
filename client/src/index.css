@@ -273,12 +273,28 @@ main {
   color: white;
 
   border: 1px solid #2563eb;
+
+  padding: 10px 18px;
+
+  border-radius: 7px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  transition: 0.2s ease;
 }
 
 .btn-primary:hover {
   background: #1d4ed8;
 
   border-color: #1d4ed8;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
 }
 
 
@@ -292,10 +308,26 @@ main {
   color: #334155;
 
   border: 1px solid #cbd5e1;
+
+  padding: 10px 18px;
+
+  border-radius: 7px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  transition: 0.2s ease;
 }
 
 .btn-secondary:hover {
   background: #f8fafc;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
 }
 
 
@@ -530,79 +562,50 @@ tbody tr:hover {
    PRODUCT COLUMN WIDTHS
 ========================================= */
 
-/* Product Name */
-
 .product-table th:nth-child(1),
 .product-table td:nth-child(1) {
   width: 180px;
 }
-
-
-/* SKU */
 
 .product-table th:nth-child(2),
 .product-table td:nth-child(2) {
   width: 120px;
 }
 
-
-/* Category */
-
 .product-table th:nth-child(3),
 .product-table td:nth-child(3) {
   width: 150px;
 }
-
-
-/* Purchase Price */
 
 .product-table th:nth-child(4),
 .product-table td:nth-child(4) {
   width: 145px;
 }
 
-
-/* Selling Price */
-
 .product-table th:nth-child(5),
 .product-table td:nth-child(5) {
   width: 145px;
 }
-
-
-/* Tax */
 
 .product-table th:nth-child(6),
 .product-table td:nth-child(6) {
   width: 90px;
 }
 
-
-/* Stock */
-
 .product-table th:nth-child(7),
 .product-table td:nth-child(7) {
   width: 100px;
 }
-
-
-/* Minimum Stock */
 
 .product-table th:nth-child(8),
 .product-table td:nth-child(8) {
   width: 120px;
 }
 
-
-/* Status */
-
 .product-table th:nth-child(9),
 .product-table td:nth-child(9) {
   width: 110px;
 }
-
-
-/* Actions */
 
 .product-table th:nth-child(10),
 .product-table td:nth-child(10) {
@@ -701,6 +704,38 @@ tbody tr:hover {
 }
 
 
+/* Inventory.jsx uses these badge classes */
+
+.status-badge {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.status-badge.active {
+  background: #dcfce7;
+
+  color: #15803d;
+}
+
+.status-badge.inactive {
+  background: #fee2e2;
+
+  color: #b91c1c;
+}
+
+
 /* =========================================
    EMPTY TABLE
 ========================================= */
@@ -765,7 +800,7 @@ tbody tr:hover {
 
 .btn-primary-small,
 .btn-warning-small {
-  padding: 7px 12px;
+  padding: 8px 13px;
 
   border-radius: 6px;
 
@@ -773,6 +808,8 @@ tbody tr:hover {
   font-weight: 600;
 
   transition: 0.2s ease;
+
+  white-space: nowrap;
 }
 
 .btn-primary-small {
@@ -797,6 +834,117 @@ tbody tr:hover {
 
 .btn-warning-small:hover {
   background: #ffedd5;
+}
+
+
+/* =========================================
+   INVENTORY FILTER ACTIONS
+========================================= */
+
+.inventory-filter-actions {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-top: 20px;
+}
+
+.checkbox-label {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  color: #334155;
+
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  width: 16px;
+
+  height: 16px;
+
+  margin: 0;
+
+  cursor: pointer;
+}
+
+.inventory-filter-actions .btn-secondary {
+  padding: 9px 16px;
+}
+
+
+/* =========================================
+   INVENTORY TABLE
+========================================= */
+
+.table-card {
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+}
+
+.table-header h2 {
+  margin: 0 0 5px;
+
+  color: #0f172a;
+
+  font-size: 21px;
+}
+
+.table-header p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 14px;
+}
+
+.low-stock-row {
+  background: #fff7ed;
+}
+
+.low-stock-row:hover {
+  background: #ffedd5 !important;
+}
+
+
+/* =========================================
+   STOCK PREVIEW
+========================================= */
+
+.stock-preview {
+  margin: 10px 0;
+
+  padding: 10px 12px;
+
+  border-radius: 6px;
+
+  background: #f1f5f9;
+
+  color: #334155;
+
+  font-size: 14px;
+
+  font-weight: 500;
 }
 
 
@@ -843,18 +991,101 @@ tbody tr:hover {
   font-size: 22px;
 }
 
-.modal-product,
-.modal-stock {
-  margin: 8px 0;
+.modal-product {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+
+  margin-bottom: 15px;
 
   color: #475569;
 
   font-size: 14px;
 }
 
-.modal-product strong,
+.modal-product strong {
+  color: #0f172a;
+
+  font-size: 16px;
+}
+
+.modal-product span {
+  color: #64748b;
+}
+
+.modal-stock {
+  margin: 8px 0 20px;
+
+  padding: 12px;
+
+  background: #f8fafc;
+
+  border-radius: 6px;
+
+  color: #475569;
+
+  font-size: 14px;
+}
+
 .modal-stock strong {
   color: #0f172a;
+}
+
+
+/* =========================================
+   MODAL ACTIONS
+========================================= */
+
+.modal-actions {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  min-width: 100px;
+}
+
+
+/* =========================================
+   LOADING / EMPTY / ERROR
+========================================= */
+
+.loading,
+.empty-state {
+  padding: 40px 20px;
+
+  text-align: center;
+
+  color: #64748b;
+
+  font-size: 15px;
+}
+
+.error-message {
+  margin-bottom: 20px;
+
+  padding: 12px 15px;
+
+  border: 1px solid #fecaca;
+
+  border-radius: 7px;
+
+  background: #fef2f2;
+
+  color: #b91c1c;
+
+  font-size: 14px;
+
+  font-weight: 500;
 }
 
 
@@ -880,7 +1111,6 @@ tbody tr:hover {
   .page-container {
     padding: 28px 22px 50px;
   }
-
 }
 
 
@@ -944,6 +1174,20 @@ tbody tr:hover {
     grid-template-columns: 1fr;
   }
 
+  .inventory-filter-actions {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .table-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+
   .form-actions {
     flex-wrap: wrap;
   }
@@ -953,9 +1197,20 @@ tbody tr:hover {
   }
 
   .modal {
+    width: 90%;
+
     padding: 20px;
   }
 
+  .modal-actions {
+    flex-direction: column-reverse;
+
+    width: 100%;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
 }
 
 
@@ -976,5 +1231,4 @@ tbody tr:hover {
   .form-actions button {
     width: 100%;
   }
-
 }
