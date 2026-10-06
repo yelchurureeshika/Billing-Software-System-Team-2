@@ -1,4 +1,5 @@
 # Billing Software System - Team 2
+
 # Backend API Documentation
 
 ## 1. Project Information
@@ -10,17 +11,34 @@
 
 ### Backend Server
 
-`http://localhost:5000`
+```text
+http://localhost:5000
+```
 
 ### API Base URL
 
-`http://localhost:5000/api`
+```text
+http://localhost:5000/api
+```
 
 ---
 
-# 2. Category APIs
+# 2. Backend API Structure
 
-Category APIs are used to create, view, search, update and deactivate product categories.
+The backend provides APIs for:
+
+- Product Management
+- Category Management
+- Product Search and Filtering
+- Category Search and Filtering
+- Low Stock Detection
+- Product and Category Relationship
+
+---
+
+# 3. Category APIs
+
+Category APIs are used to create, view, update and deactivate product categories.
 
 ## Category API Summary
 
@@ -28,23 +46,31 @@ Category APIs are used to create, view, search, update and deactivate product ca
 |---|---|---|
 | POST | `/api/categories` | Create category |
 | GET | `/api/categories` | Get all categories |
-| GET | `/api/categories?search=value` | Search categories |
-| GET | `/api/categories?status=ACTIVE` | Filter categories by status |
 | GET | `/api/categories/:id` | Get category by ID |
 | PUT | `/api/categories/:id` | Update category |
 | DELETE | `/api/categories/:id` | Deactivate category |
 
 ---
 
-# 3. Create Category
+# 4. Create Category
+
+### Method
+
+```text
+POST
+```
 
 ### Endpoint
 
-`POST /api/categories`
+```text
+/api/categories
+```
 
 ### Full URL
 
-`http://localhost:5000/api/categories`
+```text
+http://localhost:5000/api/categories
+```
 
 ### Purpose
 
@@ -98,7 +124,7 @@ Content-Type: application/json
 - Category name cannot exceed 50 characters.
 - Description cannot exceed 200 characters.
 
-### Duplicate Category Response
+### Duplicate Category
 
 **Status Code: 409 Conflict**
 
@@ -111,19 +137,29 @@ Content-Type: application/json
 
 ---
 
-# 4. Get All Categories
+# 5. Get All Categories
+
+### Method
+
+```text
+GET
+```
 
 ### Endpoint
 
-`GET /api/categories`
+```text
+/api/categories
+```
 
 ### Full URL
 
-`http://localhost:5000/api/categories`
+```text
+http://localhost:5000/api/categories
+```
 
 ### Purpose
 
-Returns all categories stored in the database.
+Returns all categories from the database.
 
 ### Success Response
 
@@ -150,67 +186,33 @@ Returns all categories stored in the database.
 }
 ```
 
----
+### Search Categories
 
-# 5. Search Categories
-
-### Endpoint
-
-`GET /api/categories?search=value`
+The same `GET /api/categories` endpoint supports category search using the `search` query parameter.
 
 ### Example
 
-`http://localhost:5000/api/categories?search=Electronics`
+```text
+GET /api/categories?search=Electronics
+```
 
-### Purpose
+### Full URL
 
-Searches categories using the category name.
+```text
+http://localhost:5000/api/categories?search=Electronics
+```
 
 The search is case-insensitive.
 
-### Example
+### Filter Categories by Status
 
-```text
-GET /api/categories?search=elect
-```
-
-This can return categories such as:
-
-```text
-Electronics
-Electrical Items
-```
-
-### Success Response
-
-**Status Code: 200 OK**
-
-```json
-{
-  "success": true,
-  "count": 1,
-  "data": [
-    {
-      "_id": "CATEGORY_ID",
-      "name": "Electronics",
-      "description": "Electronic products",
-      "status": "ACTIVE"
-    }
-  ]
-}
-```
-
----
-
-# 6. Filter Categories by Status
-
-### Endpoint
-
-`GET /api/categories?status=ACTIVE`
+The same endpoint supports filtering using the `status` query parameter.
 
 ### Example
 
-`http://localhost:5000/api/categories?status=ACTIVE`
+```text
+GET /api/categories?status=ACTIVE
+```
 
 ### Available Status
 
@@ -219,21 +221,33 @@ ACTIVE
 INACTIVE
 ```
 
-### Purpose
+### Search and Status Together
 
-Returns categories based on their status.
+```text
+GET /api/categories?search=Electronics&status=ACTIVE
+```
 
 ---
 
-# 7. Get Category by ID
+# 6. Get Category by ID
+
+### Method
+
+```text
+GET
+```
 
 ### Endpoint
 
-`GET /api/categories/:id`
+```text
+/api/categories/:id
+```
 
-### Example
+### Full URL Example
 
-`http://localhost:5000/api/categories/CATEGORY_ID`
+```text
+http://localhost:5000/api/categories/CATEGORY_ID
+```
 
 ### Purpose
 
@@ -268,15 +282,25 @@ Returns a single category using its MongoDB ObjectId.
 
 ---
 
-# 8. Update Category
+# 7. Update Category
+
+### Method
+
+```text
+PUT
+```
 
 ### Endpoint
 
-`PUT /api/categories/:id`
+```text
+/api/categories/:id
+```
 
-### Example
+### Full URL Example
 
-`http://localhost:5000/api/categories/CATEGORY_ID`
+```text
+http://localhost:5000/api/categories/CATEGORY_ID
+```
 
 ### Purpose
 
@@ -317,32 +341,57 @@ Updates an existing category.
 }
 ```
 
-### Valid Status Values
+### Status Validation
+
+Only the following status values are accepted:
 
 ```text
 ACTIVE
 INACTIVE
 ```
 
+### Duplicate Category Name
+
+If another category already has the same name:
+
+**Status Code: 409 Conflict**
+
+```json
+{
+  "success": false,
+  "message": "Another category with this name already exists"
+}
+```
+
 ---
 
-# 9. Delete / Deactivate Category
+# 8. Delete / Deactivate Category
+
+### Method
+
+```text
+DELETE
+```
 
 ### Endpoint
 
-`DELETE /api/categories/:id`
+```text
+/api/categories/:id
+```
 
-### Example
+### Full URL Example
 
-`http://localhost:5000/api/categories/CATEGORY_ID`
+```text
+http://localhost:5000/api/categories/CATEGORY_ID
+```
 
 ### Purpose
 
 The current implementation uses a **soft delete**.
 
-The category is not permanently removed from MongoDB.
+The category is not permanently deleted from the database.
 
-Instead:
+Instead, its status is changed:
 
 ```text
 ACTIVE → INACTIVE
@@ -364,39 +413,56 @@ ACTIVE → INACTIVE
 }
 ```
 
+### Category Not Found
+
+**Status Code: 404 Not Found**
+
+```json
+{
+  "success": false,
+  "message": "Category not found"
+}
+```
+
 ---
 
-# 10. Product APIs
+# 9. Product APIs
 
-Product APIs are used to create, view, search, filter, update and delete products.
+Product APIs are used to create, view, update and delete products.
 
 ## Product API Summary
 
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/api/products` | Create product |
 | GET | `/api/products` | Get all products |
-| GET | `/api/products?search=value` | Search products |
-| GET | `/api/products?status=ACTIVE` | Filter by status |
-| GET | `/api/products?minPrice=value` | Minimum price filter |
-| GET | `/api/products?maxPrice=value` | Maximum price filter |
-| GET | `/api/products?minPrice=value&maxPrice=value` | Price range |
-| GET | `/api/products?lowStock=true` | Get low-stock products |
 | GET | `/api/products/:id` | Get product by ID |
+| POST | `/api/products` | Create product |
 | PUT | `/api/products/:id` | Update product |
 | DELETE | `/api/products/:id` | Delete product |
 
+> **Note:** Search, status filtering, price filtering and low-stock filtering are query parameters of `GET /api/products`. They are not separate routes.
+
 ---
 
-# 11. Create Product
+# 10. Create Product
+
+### Method
+
+```text
+POST
+```
 
 ### Endpoint
 
-`POST /api/products`
+```text
+/api/products
+```
 
 ### Full URL
 
-`http://localhost:5000/api/products`
+```text
+http://localhost:5000/api/products
+```
 
 ### Purpose
 
@@ -481,19 +547,29 @@ Content-Type: application/json
 
 ---
 
-# 12. Get All Products
+# 11. Get All Products
+
+### Method
+
+```text
+GET
+```
 
 ### Endpoint
 
-`GET /api/products`
+```text
+/api/products
+```
 
 ### Full URL
 
-`http://localhost:5000/api/products`
+```text
+http://localhost:5000/api/products
+```
 
 ### Purpose
 
-Returns all products stored in the database.
+Returns all products from the database.
 
 ### Success Response
 
@@ -518,15 +594,27 @@ Returns all products stored in the database.
 
 ---
 
-# 13. Search Products
+# 12. Search Products
+
+The search functionality is implemented inside the existing:
+
+```text
+GET /api/products
+```
+
+route.
 
 ### Endpoint
 
-`GET /api/products?search=value`
+```text
+GET /api/products?search=value
+```
 
 ### Example
 
-`http://localhost:5000/api/products?search=Laptop`
+```text
+http://localhost:5000/api/products?search=Laptop
+```
 
 ### Purpose
 
@@ -542,15 +630,27 @@ GET /api/products?search=lap
 
 ---
 
-# 14. Filter Products by Status
+# 13. Filter Products by Status
+
+The status filter is implemented inside the existing:
+
+```text
+GET /api/products
+```
+
+route.
 
 ### Endpoint
 
-`GET /api/products?status=ACTIVE`
+```text
+GET /api/products?status=ACTIVE
+```
 
 ### Example
 
-`http://localhost:5000/api/products?status=ACTIVE`
+```text
+http://localhost:5000/api/products?status=ACTIVE
+```
 
 ### Available Status
 
@@ -561,15 +661,19 @@ INACTIVE
 
 ---
 
-# 15. Filter Products by Minimum Price
+# 14. Filter Products by Minimum Price
 
 ### Endpoint
 
-`GET /api/products?minPrice=value`
+```text
+GET /api/products?minPrice=value
+```
 
 ### Example
 
-`http://localhost:5000/api/products?minPrice=10000`
+```text
+http://localhost:5000/api/products?minPrice=10000
+```
 
 ### Purpose
 
@@ -577,15 +681,19 @@ Returns products whose selling price is greater than or equal to the specified m
 
 ---
 
-# 16. Filter Products by Maximum Price
+# 15. Filter Products by Maximum Price
 
 ### Endpoint
 
-`GET /api/products?maxPrice=value`
+```text
+GET /api/products?maxPrice=value
+```
 
 ### Example
 
-`http://localhost:5000/api/products?maxPrice=50000`
+```text
+http://localhost:5000/api/products?maxPrice=50000
+```
 
 ### Purpose
 
@@ -593,35 +701,51 @@ Returns products whose selling price is less than or equal to the specified maxi
 
 ---
 
-# 17. Filter Products by Price Range
+# 16. Filter Products by Price Range
 
 ### Endpoint
 
-`GET /api/products?minPrice=value&maxPrice=value`
+```text
+GET /api/products?minPrice=value&maxPrice=value
+```
 
 ### Example
 
-`http://localhost:5000/api/products?minPrice=10000&maxPrice=50000`
+```text
+http://localhost:5000/api/products?minPrice=10000&maxPrice=50000
+```
 
 ### Purpose
 
-Returns products whose selling price is within the specified price range.
+Returns products whose selling price is within the specified range.
 
 ---
 
-# 18. Get Low Stock Products
+# 17. Get Low Stock Products
+
+The low-stock functionality is implemented inside the existing:
+
+```text
+GET /api/products
+```
+
+route.
 
 ### Endpoint
 
-`GET /api/products?lowStock=true`
+```text
+GET /api/products?lowStock=true
+```
 
 ### Full URL
 
-`http://localhost:5000/api/products?lowStock=true`
+```text
+http://localhost:5000/api/products?lowStock=true
+```
 
 ### Purpose
 
-Returns products where the current stock is less than or equal to the minimum stock level.
+Returns products where the current stock is less than or equal to the minimum stock.
 
 ### Low Stock Condition
 
@@ -657,15 +781,25 @@ NORMAL STOCK
 
 ---
 
-# 19. Get Product by ID
+# 18. Get Product by ID
+
+### Method
+
+```text
+GET
+```
 
 ### Endpoint
 
-`GET /api/products/:id`
+```text
+/api/products/:id
+```
 
-### Example
+### Full URL Example
 
-`http://localhost:5000/api/products/PRODUCT_ID`
+```text
+http://localhost:5000/api/products/PRODUCT_ID
+```
 
 ### Purpose
 
@@ -702,15 +836,25 @@ Returns a single product using its MongoDB ObjectId.
 
 ---
 
-# 20. Update Product
+# 19. Update Product
+
+### Method
+
+```text
+PUT
+```
 
 ### Endpoint
 
-`PUT /api/products/:id`
+```text
+/api/products/:id
+```
 
-### Example
+### Full URL Example
 
-`http://localhost:5000/api/products/PRODUCT_ID`
+```text
+http://localhost:5000/api/products/PRODUCT_ID
+```
 
 ### Purpose
 
@@ -750,15 +894,25 @@ Updates an existing product.
 
 ---
 
-# 21. Delete Product
+# 20. Delete Product
+
+### Method
+
+```text
+DELETE
+```
 
 ### Endpoint
 
-`DELETE /api/products/:id`
+```text
+/api/products/:id
+```
 
-### Example
+### Full URL Example
 
-`http://localhost:5000/api/products/PRODUCT_ID`
+```text
+http://localhost:5000/api/products/PRODUCT_ID
+```
 
 ### Purpose
 
@@ -774,13 +928,23 @@ Deletes the product from the database.
 }
 ```
 
+### Product Not Found
+
+**Status Code: 404 Not Found**
+
+```json
+{
+  "message": "Product not found"
+}
+```
+
 ---
 
-# 22. Product-Category Relationship
+# 21. Product and Category Relationship
 
 Each product belongs to a category.
 
-The Product schema stores the category MongoDB ObjectId reference.
+The Product schema stores the category MongoDB ObjectId.
 
 ### Relationship
 
@@ -820,11 +984,11 @@ Product
 }
 ```
 
-The product is associated with the **Electronics** category through the category ObjectId.
+The product is associated with the Electronics category through the category ObjectId.
 
 ---
 
-# 23. Category Schema
+# 22. Category Schema
 
 ```text
 Category
@@ -848,7 +1012,7 @@ Category
 
 ---
 
-# 24. Product Schema
+# 23. Product Schema
 
 ```text
 Product
@@ -884,15 +1048,69 @@ Product
 
 ---
 
-# 25. Inventory Logic
+# 24. Category Search and Filtering
 
-The Product collection stores the current stock using:
+The `GET /api/categories` route supports query parameters.
+
+### Search
+
+```text
+GET /api/categories?search=Electronics
+```
+
+### Status Filter
+
+```text
+GET /api/categories?status=ACTIVE
+```
+
+### Search + Status
+
+```text
+GET /api/categories?search=Electronics&status=ACTIVE
+```
+
+---
+
+# 25. Product Search and Filtering
+
+The `GET /api/products` route supports the following query parameters:
+
+| Query Parameter | Example | Purpose |
+|---|---|---|
+| search | `?search=Laptop` | Search by product name |
+| status | `?status=ACTIVE` | Filter by product status |
+| minPrice | `?minPrice=10000` | Minimum selling price |
+| maxPrice | `?maxPrice=50000` | Maximum selling price |
+| lowStock | `?lowStock=true` | Find low-stock products |
+
+### Multiple Filters
+
+The query parameters can be combined.
+
+Example:
+
+```text
+GET /api/products?search=Laptop&status=ACTIVE
+```
+
+Another example:
+
+```text
+GET /api/products?minPrice=10000&maxPrice=50000&status=ACTIVE
+```
+
+---
+
+# 26. Inventory Logic
+
+The Product collection currently stores:
 
 ```text
 stockQuantity
 ```
 
-The minimum required stock is stored using:
+and:
 
 ```text
 minimumStock
@@ -919,9 +1137,9 @@ LOW STOCK
 
 ---
 
-# 26. Inventory API Dependencies
+# 27. Inventory API Dependencies
 
-Inventory stock changes will be connected with other modules.
+Inventory stock changes can be connected with other modules.
 
 ## Purchase Module
 
@@ -976,7 +1194,7 @@ The operation should not be allowed because:
 
 ---
 
-# 27. Common HTTP Status Codes
+# 28. Common HTTP Status Codes
 
 | Status Code | Meaning |
 |---|---|
@@ -989,9 +1207,9 @@ The operation should not be allowed because:
 
 ---
 
-# 28. Common Error Responses
+# 29. Common Error Responses
 
-## Product Not Found
+### Product Not Found
 
 ```json
 {
@@ -999,7 +1217,7 @@ The operation should not be allowed because:
 }
 ```
 
-## Category Not Found
+### Category Not Found
 
 ```json
 {
@@ -1008,7 +1226,7 @@ The operation should not be allowed because:
 }
 ```
 
-## Duplicate SKU
+### Duplicate SKU
 
 ```json
 {
@@ -1016,7 +1234,7 @@ The operation should not be allowed because:
 }
 ```
 
-## Duplicate Category
+### Duplicate Category
 
 ```json
 {
@@ -1025,7 +1243,7 @@ The operation should not be allowed because:
 }
 ```
 
-## Invalid Category Status
+### Invalid Category Status
 
 ```json
 {
@@ -1036,7 +1254,7 @@ The operation should not be allowed because:
 
 ---
 
-# 29. Postman Testing
+# 30. Postman Testing
 
 All APIs can be tested using Postman.
 
@@ -1063,7 +1281,7 @@ http://localhost:5000
 
 ## Step 3: Create Category
 
-```http
+```text
 POST http://localhost:5000/api/categories
 ```
 
@@ -1078,17 +1296,17 @@ Body → raw → JSON:
 
 ## Step 4: Copy Category ID
 
-After creating the category, copy its:
+After creating the category, copy:
 
 ```text
 _id
 ```
 
-This Category ID is required when creating a product.
+This Category ID is used when creating a product.
 
 ## Step 5: Create Product
 
-```http
+```text
 POST http://localhost:5000/api/products
 ```
 
@@ -1113,11 +1331,22 @@ Body:
 ```text
 GET    /api/products
 GET    /api/products/:id
+POST   /api/products
 PUT    /api/products/:id
 DELETE /api/products/:id
 ```
 
-## Step 7: Test Product Filters
+## Step 7: Test Category APIs
+
+```text
+POST   /api/categories
+GET    /api/categories
+GET    /api/categories/:id
+PUT    /api/categories/:id
+DELETE /api/categories/:id
+```
+
+## Step 8: Test Product Query Parameters
 
 ### Search
 
@@ -1157,73 +1386,44 @@ GET /api/products?lowStock=true
 
 ---
 
-# 30. API Development Status
-
-## Completed
-
-- MongoDB Atlas database connection
-- Category model
-- Category creation API
-- Category listing API
-- Category search API
-- Category status filtering
-- Category get-by-ID API
-- Category update API
-- Category soft delete/deactivation API
-- Product model
-- Product creation API
-- Product listing API
-- Product get-by-ID API
-- Product update API
-- Product delete API
-- Product search
-- Product status filtering
-- Product price filtering
-- Low-stock filtering
-- SKU uniqueness handling
-- Product-category relationship
-- Postman API testing
-- API documentation
-
-## Pending / Integration
-
-- Inventory API
-- Purchase stock increase integration
-- Sales stock decrease integration
-- Negative stock prevention
-- Frontend integration
-- Dashboard low-stock integration
-
----
-
 # 31. API Endpoint Quick Reference
 
-## Categories
+## Category APIs
 
 ```text
 POST   /api/categories
 GET    /api/categories
-GET    /api/categories?search=value
-GET    /api/categories?status=ACTIVE
 GET    /api/categories/:id
 PUT    /api/categories/:id
 DELETE /api/categories/:id
 ```
 
-## Products
+## Product APIs
 
 ```text
-POST   /api/products
 GET    /api/products
-GET    /api/products?search=value
-GET    /api/products?status=ACTIVE
-GET    /api/products?minPrice=value
-GET    /api/products?maxPrice=value
-GET    /api/products?minPrice=value&maxPrice=value
-GET    /api/products?lowStock=true
 GET    /api/products/:id
+POST   /api/products
 PUT    /api/products/:id
 DELETE /api/products/:id
+```
+
+## Product Query Parameters
+
+```text
+GET /api/products?search=value
+GET /api/products?status=ACTIVE
+GET /api/products?minPrice=value
+GET /api/products?maxPrice=value
+GET /api/products?minPrice=value&maxPrice=value
+GET /api/products?lowStock=true
+```
+
+## Category Query Parameters
+
+```text
+GET /api/categories?search=value
+GET /api/categories?status=ACTIVE
 ```
 
 ---
@@ -1257,7 +1457,39 @@ server/
 
 ---
 
-# 33. Repository
+# 33. API Development Status
+
+## Completed
+
+- MongoDB Atlas database connection
+- Product model
+- Category model
+- Product CRUD APIs
+- Category CRUD APIs
+- Product-category relationship
+- SKU uniqueness handling
+- Product search
+- Product status filtering
+- Product price filtering
+- Low-stock filtering
+- Category search
+- Category status filtering
+- Category soft delete/deactivation
+- Postman API testing
+- Backend API documentation
+
+## Pending / Integration
+
+- Inventory API
+- Purchase stock increase integration
+- Sales stock decrease integration
+- Negative stock prevention
+- Frontend integration
+- Dashboard low-stock integration
+
+---
+
+# 34. Repository
 
 GitHub Repository:
 
@@ -1267,7 +1499,7 @@ https://github.com/yelchurureeshika/Billing-Software-System-Team-2
 
 ---
 
-# 34. Team 2 Backend Responsibility
+# 35. Team 2 Backend Responsibility
 
 The backend and database responsibilities include:
 
@@ -1290,27 +1522,27 @@ The backend and database responsibilities include:
 
 ---
 
-# 35. Conclusion
+# 36. Conclusion
 
 The Team 2 backend provides APIs for managing products and categories and provides the foundation for inventory management.
 
-The APIs support:
+The backend currently supports:
 
 - Product CRUD operations
 - Category CRUD operations
 - Product-category relationship
 - Product search
 - Category search
-- Product filtering
+- Product status filtering
 - Category status filtering
 - Price filtering
 - Low-stock detection
 - SKU uniqueness
 - Category deactivation
 - MongoDB data management
-- Postman testing
+- Postman API testing
 
-The backend APIs can be integrated with the React frontend and other billing system modules.
+The APIs can be integrated with the React frontend and other billing system modules.
 
 ---
 
