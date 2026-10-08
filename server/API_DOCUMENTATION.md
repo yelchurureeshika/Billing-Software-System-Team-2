@@ -1487,7 +1487,7 @@ Example:
 
 ```env
 PORT=5000
-MONGO_URI= your URI
+MONGO_URI= your MongoDB URI
 ```
 
 Do not commit actual MongoDB credentials or passwords to GitHub.
