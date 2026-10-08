@@ -33,23 +33,16 @@ function Products() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // =========================================
-  // FETCH PRODUCTS
-  // =========================================
-
   const fetchProducts = async () => {
     try {
       setLoading(true);
       setError("");
 
       const response = await fetch(PRODUCT_API);
-
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to fetch products"
-        );
+        throw new Error(data.message || "Failed to fetch products");
       }
 
       setProducts(data);
@@ -61,20 +54,13 @@ function Products() {
     }
   };
 
-  // =========================================
-  // FETCH CATEGORIES
-  // =========================================
-
   const fetchCategories = async () => {
     try {
       const response = await fetch(CATEGORY_API);
-
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to fetch categories"
-        );
+        throw new Error(data.message || "Failed to fetch categories");
       }
 
       setCategories(data.data || []);
@@ -83,18 +69,10 @@ function Products() {
     }
   };
 
-  // =========================================
-  // LOAD DATA WHEN PAGE OPENS
-  // =========================================
-
   useEffect(() => {
     fetchProducts();
     fetchCategories();
   }, []);
-
-  // =========================================
-  // FORM CHANGE
-  // =========================================
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -104,10 +82,6 @@ function Products() {
       [name]: value,
     });
   };
-
-  // =========================================
-  // ADD / UPDATE PRODUCT
-  // =========================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -161,21 +135,13 @@ function Products() {
 
     const productData = {
       productName: formData.productName.trim(),
-
       sku: formData.sku.trim().toUpperCase(),
-
       category: formData.category,
-
       purchasePrice: Number(formData.purchasePrice),
-
       sellingPrice: Number(formData.sellingPrice),
-
       taxRate: Number(formData.taxRate),
-
       stockQuantity: Number(formData.stockQuantity),
-
       minimumStock: Number(formData.minimumStock),
-
       status: formData.status,
     };
 
@@ -183,110 +149,69 @@ function Products() {
       setSaving(true);
       setError("");
 
-      // =========================================
-      // UPDATE PRODUCT
-      // =========================================
+      let response;
 
       if (editingId !== null) {
-        const response = await fetch(
-          `${PRODUCT_API}/${editingId}`,
-          {
-            method: "PUT",
-
-            headers: {
-              "Content-Type": "application/json",
-            },
-
-            body: JSON.stringify(productData),
-          }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.message || "Failed to update product"
-          );
-        }
-
-        alert("Product updated successfully.");
-      }
-
-      // =========================================
-      // CREATE PRODUCT
-      // =========================================
-
-      else {
-        const response = await fetch(PRODUCT_API, {
-          method: "POST",
-
+        response = await fetch(`${PRODUCT_API}/${editingId}`, {
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-
           body: JSON.stringify(productData),
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.message || "Failed to create product"
-          );
-        }
-
-        alert("Product added successfully.");
+      } else {
+        response = await fetch(PRODUCT_API, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(productData),
+        });
       }
 
-      // =========================================
-      // GET FRESH DATA FROM DATABASE
-      // =========================================
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            (editingId !== null
+              ? "Failed to update product"
+              : "Failed to create product")
+        );
+      }
+
+      alert(
+        editingId !== null
+          ? "Product updated successfully."
+          : "Product added successfully."
+      );
 
       await fetchProducts();
 
       setFormData(emptyForm);
-
       setEditingId(null);
     } catch (error) {
       console.error("Save product error:", error);
 
       alert(error.message);
-
       setError(error.message);
     } finally {
       setSaving(false);
     }
   };
 
-  // =========================================
-  // EDIT PRODUCT
-  // =========================================
-
   const handleEdit = (product) => {
     setEditingId(product._id);
 
     setFormData({
       productName: product.productName || "",
-
       sku: product.sku || "",
-
       category: product.category?._id || product.category || "",
-
-      purchasePrice:
-        product.purchasePrice?.toString() || "",
-
-      sellingPrice:
-        product.sellingPrice?.toString() || "",
-
-      taxRate:
-        product.taxRate?.toString() || "0",
-
-      stockQuantity:
-        product.stockQuantity?.toString() || "",
-
-      minimumStock:
-        product.minimumStock?.toString() || "",
-
+      purchasePrice: product.purchasePrice?.toString() || "",
+      sellingPrice: product.sellingPrice?.toString() || "",
+      taxRate: product.taxRate?.toString() || "0",
+      stockQuantity: product.stockQuantity?.toString() || "",
+      minimumStock: product.minimumStock?.toString() || "",
       status: product.status || "ACTIVE",
     });
 
@@ -295,10 +220,6 @@ function Products() {
       behavior: "smooth",
     });
   };
-
-  // =========================================
-  // DELETE PRODUCT
-  // =========================================
 
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
@@ -310,12 +231,9 @@ function Products() {
     }
 
     try {
-      const response = await fetch(
-        `${PRODUCT_API}/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`${PRODUCT_API}/${id}`, {
+        method: "DELETE",
+      });
 
       const data = await response.json();
 
@@ -330,24 +248,14 @@ function Products() {
       await fetchProducts();
     } catch (error) {
       console.error("Delete product error:", error);
-
       alert(error.message);
     }
   };
 
-  // =========================================
-  // CANCEL EDIT
-  // =========================================
-
   const handleCancel = () => {
     setFormData(emptyForm);
-
     setEditingId(null);
   };
-
-  // =========================================
-  // FILTER PRODUCTS
-  // =========================================
 
   const filteredProducts = products.filter((product) => {
     const searchText = search.toLowerCase().trim();
@@ -380,8 +288,7 @@ function Products() {
       product.sellingPrice <= Number(maxPrice);
 
     const isLowStock =
-      product.stockQuantity <=
-      product.minimumStock;
+      product.stockQuantity <= product.minimumStock;
 
     const matchesLowStock =
       !lowStockOnly || isLowStock;
@@ -396,10 +303,6 @@ function Products() {
     );
   });
 
-  // =========================================
-  // CLEAR FILTERS
-  // =========================================
-
   const clearFilters = () => {
     setSearch("");
     setCategoryFilter("ALL");
@@ -409,10 +312,6 @@ function Products() {
     setLowStockOnly(false);
   };
 
-  // =========================================
-  // GET CATEGORY NAME
-  // =========================================
-
   const getCategoryName = (product) => {
     if (product.category?.name) {
       return product.category.name;
@@ -420,75 +319,46 @@ function Products() {
 
     const category = categories.find(
       (item) =>
-        item._id === product.category
+        item._id ===
+        (product.category?._id || product.category)
     );
 
     return category?.name || "Unknown";
   };
 
-  // =========================================
-  // PAGE
-  // =========================================
-
   return (
-    <div className="page-container">
-
-      {/* =================================
-          PAGE HEADER
-      ================================= */}
+    <div className="page-container product-page">
 
       <div className="page-header">
-        <h1>Products</h1>
-
-        <p>
-          Manage products and inventory details
-        </p>
+        <div>
+          <h1>Products</h1>
+          <p>Manage products and inventory details</p>
+        </div>
       </div>
 
-
-      {/* =================================
-          ERROR MESSAGE
-      ================================= */}
-
       {error && (
-        <div
-          style={{
-            background: "#fef2f2",
-            color: "#b91c1c",
-            border: "1px solid #fecaca",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            marginBottom: "20px",
-          }}
-        >
+        <div className="error-message">
           <strong>Error:</strong> {error}
         </div>
       )}
 
+      {/* ADD / EDIT PRODUCT */}
 
-      {/* =================================
-          ADD / EDIT PRODUCT
-      ================================= */}
-
-      <div className="card">
-
-        <h2>
-          {editingId !== null
-            ? "Edit Product"
-            : "Add Product"}
-        </h2>
+      <div className="page-card">
+        <div className="section-header">
+          <h2>
+            {editingId !== null
+              ? "Edit Product"
+              : "Add Product"}
+          </h2>
+        </div>
 
         <form onSubmit={handleSubmit}>
 
-          <div className="form-grid">
-
-            {/* Product Name */}
+          <div className="product-form-grid">
 
             <div className="form-group">
-
-              <label>
-                Product Name
-              </label>
+              <label>Product Name</label>
 
               <input
                 type="text"
@@ -497,17 +367,10 @@ function Products() {
                 onChange={handleChange}
                 placeholder="Enter product name"
               />
-
             </div>
 
-
-            {/* SKU */}
-
             <div className="form-group">
-
-              <label>
-                Product Code / SKU
-              </label>
+              <label>Product Code / SKU</label>
 
               <input
                 type="text"
@@ -516,24 +379,16 @@ function Products() {
                 onChange={handleChange}
                 placeholder="Enter SKU"
               />
-
             </div>
 
-
-            {/* Category */}
-
             <div className="form-group">
-
-              <label>
-                Category
-              </label>
+              <label>Category</label>
 
               <select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
               >
-
                 <option value="">
                   Select Category
                 </option>
@@ -546,141 +401,84 @@ function Products() {
                     {category.name}
                   </option>
                 ))}
-
               </select>
-
             </div>
 
-
-            {/* Purchase Price */}
-
             <div className="form-group">
-
-              <label>
-                Purchase Price
-              </label>
+              <label>Purchase Price</label>
 
               <input
                 type="number"
-                name="purchasePrice"
                 min="0"
                 value={formData.purchasePrice}
+                name="purchasePrice"
                 onChange={handleChange}
                 placeholder="Enter purchase price"
               />
-
             </div>
 
-
-            {/* Selling Price */}
-
             <div className="form-group">
-
-              <label>
-                Selling Price
-              </label>
+              <label>Selling Price</label>
 
               <input
                 type="number"
-                name="sellingPrice"
                 min="0"
                 value={formData.sellingPrice}
+                name="sellingPrice"
                 onChange={handleChange}
                 placeholder="Enter selling price"
               />
-
             </div>
 
-
-            {/* Tax Rate */}
-
             <div className="form-group">
-
-              <label>
-                Tax Rate
-              </label>
+              <label>Tax Rate</label>
 
               <select
                 name="taxRate"
                 value={formData.taxRate}
                 onChange={handleChange}
               >
-
-                <option value="0">
-                  0%
-                </option>
-
-                <option value="5">
-                  5%
-                </option>
-
-                <option value="12">
-                  12%
-                </option>
-
-                <option value="18">
-                  18%
-                </option>
-
+                <option value="0">0%</option>
+                <option value="5">5%</option>
+                <option value="12">12%</option>
+                <option value="18">18%</option>
               </select>
-
             </div>
 
-
-            {/* Stock Quantity */}
-
             <div className="form-group">
-
-              <label>
-                Stock Quantity
-              </label>
+              <label>Stock Quantity</label>
 
               <input
                 type="number"
-                name="stockQuantity"
                 min="0"
                 value={formData.stockQuantity}
+                name="stockQuantity"
                 onChange={handleChange}
                 placeholder="Enter stock quantity"
               />
-
             </div>
 
-
-            {/* Minimum Stock */}
-
             <div className="form-group">
-
-              <label>
-                Minimum Stock
-              </label>
+              <label>Minimum Stock</label>
 
               <input
                 type="number"
-                name="minimumStock"
                 min="0"
                 value={formData.minimumStock}
+                name="minimumStock"
                 onChange={handleChange}
                 placeholder="Enter minimum stock"
               />
-
             </div>
 
-
-            {/* Status */}
-
             <div className="form-group">
-
-              <label>
-                Status
-              </label>
+              <label>Status</label>
 
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
               >
-
                 <option value="ACTIVE">
                   ACTIVE
                 </option>
@@ -688,32 +486,23 @@ function Products() {
                 <option value="INACTIVE">
                   INACTIVE
                 </option>
-
               </select>
-
             </div>
 
           </div>
 
-
-          {/* Form Buttons */}
-
           <div className="form-actions">
-
             <button
               type="submit"
               className="btn-primary"
               disabled={saving}
             >
-
               {saving
                 ? "Saving..."
                 : editingId !== null
                 ? "Update Product"
                 : "Add Product"}
-
             </button>
-
 
             {editingId !== null && (
               <button
@@ -725,33 +514,23 @@ function Products() {
                 Cancel
               </button>
             )}
-
           </div>
 
         </form>
-
       </div>
 
+      {/* SEARCH & FILTERS */}
 
-      {/* =================================
-          SEARCH & FILTERS
-      ================================= */}
+      <div className="page-card">
 
-      <div className="card">
+        <div className="section-header">
+          <h2>Search & Filters</h2>
+        </div>
 
-        <h2>
-          Search & Filters
-        </h2>
-
-        <div className="filters">
-
-          {/* Search */}
+        <div className="product-filter-grid">
 
           <div className="form-group">
-
-            <label>
-              Search Product
-            </label>
+            <label>Search Product</label>
 
             <input
               type="text"
@@ -761,17 +540,10 @@ function Products() {
               }
               placeholder="Search by product name or SKU"
             />
-
           </div>
 
-
-          {/* Category Filter */}
-
           <div className="form-group">
-
-            <label>
-              Category
-            </label>
+            <label>Category</label>
 
             <select
               value={categoryFilter}
@@ -779,7 +551,6 @@ function Products() {
                 setCategoryFilter(e.target.value)
               }
             >
-
               <option value="ALL">
                 All Categories
               </option>
@@ -792,19 +563,11 @@ function Products() {
                   {category.name}
                 </option>
               ))}
-
             </select>
-
           </div>
 
-
-          {/* Status Filter */}
-
           <div className="form-group">
-
-            <label>
-              Status
-            </label>
+            <label>Status</label>
 
             <select
               value={statusFilter}
@@ -812,31 +575,14 @@ function Products() {
                 setStatusFilter(e.target.value)
               }
             >
-
-              <option value="ALL">
-                All
-              </option>
-
-              <option value="ACTIVE">
-                ACTIVE
-              </option>
-
-              <option value="INACTIVE">
-                INACTIVE
-              </option>
-
+              <option value="ALL">All</option>
+              <option value="ACTIVE">ACTIVE</option>
+              <option value="INACTIVE">INACTIVE</option>
             </select>
-
           </div>
 
-
-          {/* Minimum Price */}
-
           <div className="form-group">
-
-            <label>
-              Minimum Selling Price
-            </label>
+            <label>Minimum Selling Price</label>
 
             <input
               type="number"
@@ -847,17 +593,10 @@ function Products() {
               }
               placeholder="Min price"
             />
-
           </div>
 
-
-          {/* Maximum Price */}
-
           <div className="form-group">
-
-            <label>
-              Maximum Selling Price
-            </label>
+            <label>Maximum Selling Price</label>
 
             <input
               type="number"
@@ -868,18 +607,13 @@ function Products() {
               }
               placeholder="Max price"
             />
-
           </div>
 
         </div>
 
+        <div className="filter-bottom-row">
 
-        {/* Low Stock */}
-
-        <div className="low-stock-filter">
-
-          <label>
-
+          <label className="checkbox-label">
             <input
               type="checkbox"
               checked={lowStockOnly}
@@ -889,15 +623,7 @@ function Products() {
             />
 
             Show Low Stock Products Only
-
           </label>
-
-        </div>
-
-
-        {/* Clear Filters */}
-
-        <div className="form-actions">
 
           <button
             type="button"
@@ -911,100 +637,60 @@ function Products() {
 
       </div>
 
+      {/* PRODUCT LIST */}
 
-      {/* =================================
-          PRODUCT LIST
-      ================================= */}
+      <div className="page-card">
 
-      <div className="card">
+        <div className="table-header">
+          <div>
+            <h2>Product List</h2>
+            <p>
+              Showing {filteredProducts.length} of{" "}
+              {products.length} products
+            </p>
+          </div>
+        </div>
 
-        <h2>
-          Product List
-        </h2>
+        <div className="table-container">
 
-        <div className="table-container product-table-container">
-
-          <table className="product-table">
+          <table className="management-table product-list-table">
 
             <thead>
-
               <tr>
-
-                <th>
-                  Product Name
-                </th>
-
-                <th>
-                  SKU
-                </th>
-
-                <th>
-                  Category
-                </th>
-
-                <th>
-                  Purchase Price
-                </th>
-
-                <th>
-                  Selling Price
-                </th>
-
-                <th>
-                  Tax
-                </th>
-
-                <th>
-                  Stock
-                </th>
-
-                <th>
-                  Min Stock
-                </th>
-
-                <th>
-                  Status
-                </th>
-
-                <th>
-                  Actions
-                </th>
-
+                <th>Product Name</th>
+                <th>SKU</th>
+                <th>Category</th>
+                <th>Purchase Price</th>
+                <th>Selling Price</th>
+                <th>Tax</th>
+                <th>Stock</th>
+                <th>Min Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-
             </thead>
-
 
             <tbody>
 
               {loading ? (
-
                 <tr>
-
                   <td
                     colSpan="10"
                     className="empty-row"
                   >
                     Loading products...
                   </td>
-
                 </tr>
-
               ) : filteredProducts.length === 0 ? (
-
                 <tr>
-
                   <td
                     colSpan="10"
                     className="empty-row"
                   >
                     No products found.
                   </td>
-
                 </tr>
-
               ) : (
-
                 filteredProducts.map((product) => {
 
                   const isLowStock =
@@ -1012,107 +698,81 @@ function Products() {
                     product.minimumStock;
 
                   return (
-
-                    <tr key={product._id}>
-
-                      {/* Product Name */}
+                    <tr
+                      key={product._id}
+                      className={
+                        isLowStock
+                          ? "low-stock-row"
+                          : ""
+                      }
+                    >
 
                       <td>
-
                         <strong>
                           {product.productName}
                         </strong>
-
                       </td>
-
-
-                      {/* SKU */}
 
                       <td>
                         {product.sku}
                       </td>
 
-
-                      {/* Category */}
-
                       <td>
                         {getCategoryName(product)}
                       </td>
-
-
-                      {/* Purchase Price */}
 
                       <td>
                         ₹
                         {Number(
                           product.purchasePrice
-                        ).toLocaleString("en-IN")}
+                        ).toLocaleString("en-IN", {
+                          minimumFractionDigits: 2,
+                        })}
                       </td>
-
-
-                      {/* Selling Price */}
 
                       <td>
                         ₹
                         {Number(
                           product.sellingPrice
-                        ).toLocaleString("en-IN")}
+                        ).toLocaleString("en-IN", {
+                          minimumFractionDigits: 2,
+                        })}
                       </td>
-
-
-                      {/* Tax */}
 
                       <td>
                         {product.taxRate}%
                       </td>
 
-
-                      {/* Stock */}
-
                       <td>
-
                         <strong
-                          style={{
-                            color: isLowStock
-                              ? "#dc2626"
-                              : "#334155",
-                          }}
+                          className={
+                            isLowStock
+                              ? "stock-low"
+                              : "stock-normal"
+                          }
                         >
                           {product.stockQuantity}
                         </strong>
-
                       </td>
-
-
-                      {/* Minimum Stock */}
 
                       <td>
                         {product.minimumStock}
                       </td>
 
-
-                      {/* Status */}
-
                       <td>
-
                         <span
                           className={
                             product.status ===
                             "ACTIVE"
-                              ? "status-active"
-                              : "status-inactive"
+                              ? "status-badge active"
+                              : "status-badge inactive"
                           }
                         >
                           {product.status}
                         </span>
-
                       </td>
 
-
-                      {/* Actions */}
-
                       <td>
-
                         <div className="action-buttons">
 
                           <button
@@ -1124,7 +784,6 @@ function Products() {
                           >
                             Edit
                           </button>
-
 
                           <button
                             type="button"
@@ -1139,14 +798,11 @@ function Products() {
                           </button>
 
                         </div>
-
                       </td>
 
                     </tr>
-
                   );
                 })
-
               )}
 
             </tbody>
@@ -1154,7 +810,6 @@ function Products() {
           </table>
 
         </div>
-
       </div>
 
     </div>
