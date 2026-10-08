@@ -23,7 +23,12 @@ app.get("/", (req, res) => {
 
 // Product routes
 app.use("/api/products", productRoutes);
+
+// Category routes
 app.use("/api/categories", categoryRoutes);
+
+
+// Inventory routes
 app.use("/api/inventory", inventoryRoutes);
 
 module.exports = app;

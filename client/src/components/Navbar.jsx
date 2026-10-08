@@ -8,17 +8,36 @@ function Navbar({ currentPage, setCurrentPage }) {
 
         <nav className="nav-links">
           <button
-            className={currentPage === "products" ? "nav-link active" : "nav-link"}
+            className={
+              currentPage === "products"
+                ? "nav-link active"
+                : "nav-link"
+            }
             onClick={() => setCurrentPage("products")}
           >
             Products
           </button>
 
           <button
-            className={currentPage === "categories" ? "nav-link active" : "nav-link"}
+            className={
+              currentPage === "categories"
+                ? "nav-link active"
+                : "nav-link"
+            }
             onClick={() => setCurrentPage("categories")}
           >
             Categories
+          </button>
+
+          <button
+            className={
+              currentPage === "inventory"
+                ? "nav-link active"
+                : "nav-link"
+            }
+            onClick={() => setCurrentPage("inventory")}
+          >
+            Inventory
           </button>
         </nav>
       </div>
