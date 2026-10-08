@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.get("/summary", getInventorySummary);
 router.get("/low-stock", getLowStockItems);
-router.get("/",authenticate, getInventoryItems);
+router.get("/", getInventoryItems);
 router.get("/:id", getInventoryItemById);
 
 router.post("/", createInventoryItem);
