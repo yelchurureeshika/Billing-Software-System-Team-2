@@ -1,58 +1,665 @@
-# Billing Software System - Team 2
+# Billing Software System — Team 2
 
-# Backend API Documentation
+## Products, Categories & Inventory Management
 
-## 1. Project Information
+A MERN Stack module for managing products, product categories, inventory stock levels, and low-stock detection as part of the Billing Software System.
 
-**Project:** Billing Software System  
-**Module:** Products, Categories & Inventory  
-**Technology:** Node.js, Express.js, MongoDB, Mongoose  
-**API Testing:** Postman
+---
 
-### Backend Server
+# 1. Project Overview
+
+The Team 2 module provides backend APIs and React frontend screens for:
+
+- Product Management
+- Category Management
+- Inventory Management
+- Stock Adjustment
+- Low-Stock Detection
+- Product Search and Filtering
+- Category Search and Filtering
+- Product and Category Relationship
+- Validation and Error Handling
+
+The module is developed using the MERN stack.
+
+---
+
+# 2. Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| MongoDB | Database |
+| Mongoose | MongoDB ODM |
+| Express.js | Backend API framework |
+| Node.js | Backend runtime |
+| React.js | Frontend |
+| Vite | Frontend development server |
+| Postman | API testing |
+| Git & GitHub | Version control |
+
+### Backend
+
+```text
+Node.js
+Express.js
+MongoDB
+Mongoose
+CORS
+dotenv
+```
+
+### Frontend
+
+```text
+React.js
+Vite
+JavaScript
+CSS
+```
+
+---
+
+# 3. Module Scope
+
+The Team 2 module contains three major areas:
+
+```text
+Products
+    |
+    ├── Create Product
+    ├── View Products
+    ├── Update Product
+    ├── Delete Product
+    ├── Search Product
+    ├── Filter Product
+    └── Low Stock Detection
+
+Categories
+    |
+    ├── Create Category
+    ├── View Categories
+    ├── Update Category
+    ├── Deactivate Category
+    ├── Search Category
+    └── Filter by Status
+
+Inventory
+    |
+    ├── View Inventory
+    ├── View Inventory Summary
+    ├── Low Stock Products
+    ├── Add Stock
+    ├── Subtract Stock
+    ├── Set Stock
+    ├── Search Inventory
+    └── Filter Inventory
+```
+
+---
+
+# 4. Project Structure
+
+```text
+Billing-Software-System-Team-2/
+│
+├── server/
+│   │
+│   ├── config/
+│   │   └── db.js
+│   │
+│   ├── controllers/
+│   │   ├── categoryController.js
+│   │   ├── productController.js
+│   │   └── inventoryController.js
+│   │
+│   ├── models/
+│   │   ├── category.js
+│   │   ├── product.js
+│   │   └── inventory.js
+│   │
+│   ├── routes/
+│   │   ├── categoryRoutes.js
+│   │   ├── productRoutes.js
+│   │   └── inventoryRoutes.js
+│   │
+│   ├── app.js
+│   ├── server.js
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── API_DOCUMENTATION.md
+│   └── .env
+│
+├── client/
+│   │
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── Navbar.jsx
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── Products.jsx
+│   │   │   ├── Categories.jsx
+│   │   │   └── Inventory.jsx
+│   │   │
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css
+│   │
+│   ├── package.json
+│   ├── package-lock.json
+│   └── vite.config.js
+│
+└── README.md
+```
+
+---
+
+# 5. Backend Architecture
+
+The backend follows a basic MVC-style structure.
+
+```text
+Request
+   ↓
+Route
+   ↓
+Controller
+   ↓
+Model
+   ↓
+MongoDB
+   ↓
+Response
+```
+
+### Example
+
+```text
+POST /api/products
+        ↓
+productRoutes.js
+        ↓
+productController.js
+        ↓
+Product model
+        ↓
+MongoDB
+```
+
+---
+
+# 6. Server Configuration
+
+The backend server runs on:
 
 ```text
 http://localhost:5000
 ```
 
-### API Base URL
+API base URL:
 
 ```text
 http://localhost:5000/api
 ```
 
+The main Express application is configured in:
+
+```text
+server/app.js
+```
+
+The server is started from:
+
+```text
+server/server.js
+```
+
 ---
 
-# 2. Backend API Structure
+# 7. Backend Routes
 
-The backend provides APIs for:
+The application currently exposes:
 
-- Product Management
-- Category Management
-- Product Search and Filtering
-- Category Search and Filtering
-- Low Stock Detection
-- Product and Category Relationship
+```text
+/api/products
+/api/categories
+/api/inventory
+```
+
+### Product Routes
+
+```text
+/api/products
+```
+
+### Category Routes
+
+```text
+/api/categories
+```
+
+### Inventory Routes
+
+```text
+/api/inventory
+```
 
 ---
 
-# 3. Category APIs
+# 8. Database Models
 
-Category APIs are used to create, view, update and deactivate product categories.
+## 8.1 Product Model
+
+The Product model contains the following fields:
+
+| Field | Type | Required | Validation |
+|---|---|---|---|
+| productName | String | Yes | Required |
+| sku | String | Yes | Unique, uppercase |
+| category | ObjectId | Yes | References Category |
+| purchasePrice | Number | Yes | Minimum 0 |
+| sellingPrice | Number | Yes | Minimum 0 |
+| taxRate | Number | No | 0, 5, 12 or 18 |
+| stockQuantity | Number | Yes | Minimum 0 |
+| minimumStock | Number | Yes | Minimum 0 |
+| status | String | No | ACTIVE / INACTIVE |
+| createdAt | Date | Auto | Timestamp |
+| updatedAt | Date | Auto | Timestamp |
+
+---
+
+# 9. Category Model
+
+The Category model contains:
+
+| Field | Type | Required | Validation |
+|---|---|---|---|
+| name | String | Yes | Unique, 2-50 characters |
+| description | String | No | Maximum 200 characters |
+| status | String | No | ACTIVE / INACTIVE |
+| createdAt | Date | Auto | Timestamp |
+| updatedAt | Date | Auto | Timestamp |
+
+---
+
+# 10. Product and Category Relationship
+
+Each product belongs to a category.
+
+The Product model stores the MongoDB ObjectId of the Category.
+
+```text
+Category
+   |
+   | _id
+   ↓
+Product.category
+```
+
+Example:
+
+### Category
+
+```json
+{
+  "_id": "CATEGORY_ID",
+  "name": "Electronics",
+  "description": "Electronic products",
+  "status": "ACTIVE"
+}
+```
+
+### Product
+
+```json
+{
+  "productName": "Laptop",
+  "sku": "LAP-001",
+  "category": "CATEGORY_ID",
+  "purchasePrice": 40000,
+  "sellingPrice": 45000,
+  "taxRate": 18,
+  "stockQuantity": 10,
+  "minimumStock": 2,
+  "status": "ACTIVE"
+}
+```
+
+---
+
+# 11. Product APIs
+
+## Product API Summary
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/products` | Get all products |
+| GET | `/api/products/:id` | Get product by ID |
+| POST | `/api/products` | Create product |
+| PUT | `/api/products/:id` | Update product |
+| DELETE | `/api/products/:id` | Delete product |
+
+---
+
+# 12. Get All Products
+
+### Method
+
+```text
+GET
+```
+
+### Endpoint
+
+```text
+/api/products
+```
+
+### Full URL
+
+```text
+http://localhost:5000/api/products
+```
+
+### Response
+
+```json
+[
+  {
+    "_id": "PRODUCT_ID",
+    "productName": "Laptop",
+    "sku": "LAP-001",
+    "category": "CATEGORY_ID",
+    "purchasePrice": 40000,
+    "sellingPrice": 45000,
+    "taxRate": 18,
+    "stockQuantity": 10,
+    "minimumStock": 2,
+    "status": "ACTIVE"
+  }
+]
+```
+
+---
+
+# 13. Get Product by ID
+
+### Method
+
+```text
+GET
+```
+
+### Endpoint
+
+```text
+/api/products/:id
+```
+
+### Example
+
+```text
+GET /api/products/PRODUCT_ID
+```
+
+### Success
+
+```json
+{
+  "_id": "PRODUCT_ID",
+  "productName": "Laptop",
+  "sku": "LAP-001",
+  "category": "CATEGORY_ID",
+  "purchasePrice": 40000,
+  "sellingPrice": 45000,
+  "taxRate": 18,
+  "stockQuantity": 10,
+  "minimumStock": 2,
+  "status": "ACTIVE"
+}
+```
+
+### Product Not Found
+
+```json
+{
+  "message": "Product not found"
+}
+```
+
+---
+
+# 14. Create Product
+
+### Method
+
+```text
+POST
+```
+
+### Endpoint
+
+```text
+/api/products
+```
+
+### Header
+
+```text
+Content-Type: application/json
+```
+
+### Request Body
+
+```json
+{
+  "productName": "Laptop",
+  "sku": "LAP-001",
+  "category": "CATEGORY_ID",
+  "purchasePrice": 40000,
+  "sellingPrice": 45000,
+  "taxRate": 18,
+  "stockQuantity": 10,
+  "minimumStock": 2,
+  "status": "ACTIVE"
+}
+```
+
+### Success Response
+
+```json
+{
+  "message": "Product created successfully",
+  "product": {
+    "_id": "PRODUCT_ID",
+    "productName": "Laptop",
+    "sku": "LAP-001",
+    "category": "CATEGORY_ID",
+    "purchasePrice": 40000,
+    "sellingPrice": 45000,
+    "taxRate": 18,
+    "stockQuantity": 10,
+    "minimumStock": 2,
+    "status": "ACTIVE"
+  }
+}
+```
+
+### Duplicate SKU
+
+```json
+{
+  "message": "SKU already exists"
+}
+```
+
+---
+
+# 15. Update Product
+
+### Method
+
+```text
+PUT
+```
+
+### Endpoint
+
+```text
+/api/products/:id
+```
+
+### Example
+
+```text
+PUT /api/products/PRODUCT_ID
+```
+
+### Request Body
+
+```json
+{
+  "productName": "Updated Laptop",
+  "sellingPrice": 48000,
+  "taxRate": 18,
+  "stockQuantity": 15,
+  "minimumStock": 3,
+  "status": "ACTIVE"
+}
+```
+
+### Success Response
+
+```json
+{
+  "message": "Product updated successfully",
+  "product": {
+    "_id": "PRODUCT_ID",
+    "productName": "Updated Laptop",
+    "sellingPrice": 48000,
+    "taxRate": 18,
+    "stockQuantity": 15,
+    "minimumStock": 3,
+    "status": "ACTIVE"
+  }
+}
+```
+
+---
+
+# 16. Delete Product
+
+### Method
+
+```text
+DELETE
+```
+
+### Endpoint
+
+```text
+/api/products/:id
+```
+
+### Example
+
+```text
+DELETE /api/products/PRODUCT_ID
+```
+
+### Success Response
+
+```json
+{
+  "message": "Product deleted successfully"
+}
+```
+
+The current implementation performs a database deletion for products.
+
+---
+
+# 17. Product Search and Filtering
+
+The product API supports query parameters.
+
+## Search by Product Name
+
+```text
+GET /api/products?search=Laptop
+```
+
+The backend performs a case-insensitive search on the product name.
+
+---
+
+## Filter by Status
+
+```text
+GET /api/products?status=ACTIVE
+```
+
+Available statuses:
+
+```text
+ACTIVE
+INACTIVE
+```
+
+---
+
+## Minimum Selling Price
+
+```text
+GET /api/products?minPrice=10000
+```
+
+---
+
+## Maximum Selling Price
+
+```text
+GET /api/products?maxPrice=50000
+```
+
+---
+
+## Price Range
+
+```text
+GET /api/products?minPrice=10000&maxPrice=50000
+```
+
+---
+
+## Low Stock Products
+
+```text
+GET /api/products?lowStock=true
+```
+
+This returns products where:
+
+```text
+stockQuantity <= minimumStock
+```
+
+---
+
+# 18. Category APIs
 
 ## Category API Summary
 
 | Method | Endpoint | Description |
 |---|---|---|
 | POST | `/api/categories` | Create category |
-| GET | `/api/categories` | Get all categories |
+| GET | `/api/categories` | Get categories |
 | GET | `/api/categories/:id` | Get category by ID |
 | PUT | `/api/categories/:id` | Update category |
 | DELETE | `/api/categories/:id` | Deactivate category |
 
 ---
 
-# 4. Create Category
+# 19. Create Category
 
 ### Method
 
@@ -66,22 +673,6 @@ POST
 /api/categories
 ```
 
-### Full URL
-
-```text
-http://localhost:5000/api/categories
-```
-
-### Purpose
-
-Creates a new product category.
-
-### Request Header
-
-```text
-Content-Type: application/json
-```
-
 ### Request Body
 
 ```json
@@ -91,16 +682,7 @@ Content-Type: application/json
 }
 ```
 
-### Request Fields
-
-| Field | Type | Required | Description |
-|---|---|---|---|
-| name | String | Yes | Category name |
-| description | String | No | Category description |
-
 ### Success Response
-
-**Status Code: 201 Created**
 
 ```json
 {
@@ -115,29 +697,23 @@ Content-Type: application/json
 }
 ```
 
-### Validation
+---
+
+# 20. Category Validation
+
+The following validations are implemented:
 
 - Category name is required.
 - Category name cannot be empty.
-- Category name must be unique.
-- Category name must contain at least 2 characters.
+- Category name must be at least 2 characters.
 - Category name cannot exceed 50 characters.
+- Category name must be unique.
 - Description cannot exceed 200 characters.
-
-### Duplicate Category
-
-**Status Code: 409 Conflict**
-
-```json
-{
-  "success": false,
-  "message": "Category already exists"
-}
-```
+- Status must be ACTIVE or INACTIVE.
 
 ---
 
-# 5. Get All Categories
+# 21. Get Categories
 
 ### Method
 
@@ -151,19 +727,13 @@ GET
 /api/categories
 ```
 
-### Full URL
+### Example
 
 ```text
-http://localhost:5000/api/categories
+GET /api/categories
 ```
 
-### Purpose
-
-Returns all categories from the database.
-
-### Success Response
-
-**Status Code: 200 OK**
+### Response
 
 ```json
 {
@@ -186,50 +756,9 @@ Returns all categories from the database.
 }
 ```
 
-### Search Categories
-
-The same `GET /api/categories` endpoint supports category search using the `search` query parameter.
-
-### Example
-
-```text
-GET /api/categories?search=Electronics
-```
-
-### Full URL
-
-```text
-http://localhost:5000/api/categories?search=Electronics
-```
-
-The search is case-insensitive.
-
-### Filter Categories by Status
-
-The same endpoint supports filtering using the `status` query parameter.
-
-### Example
-
-```text
-GET /api/categories?status=ACTIVE
-```
-
-### Available Status
-
-```text
-ACTIVE
-INACTIVE
-```
-
-### Search and Status Together
-
-```text
-GET /api/categories?search=Electronics&status=ACTIVE
-```
-
 ---
 
-# 6. Get Category by ID
+# 22. Get Category by ID
 
 ### Method
 
@@ -243,19 +772,13 @@ GET
 /api/categories/:id
 ```
 
-### Full URL Example
+### Example
 
 ```text
-http://localhost:5000/api/categories/CATEGORY_ID
+GET /api/categories/CATEGORY_ID
 ```
 
-### Purpose
-
-Returns a single category using its MongoDB ObjectId.
-
 ### Success Response
-
-**Status Code: 200 OK**
 
 ```json
 {
@@ -269,20 +792,9 @@ Returns a single category using its MongoDB ObjectId.
 }
 ```
 
-### Category Not Found
-
-**Status Code: 404 Not Found**
-
-```json
-{
-  "success": false,
-  "message": "Category not found"
-}
-```
-
 ---
 
-# 7. Update Category
+# 23. Update Category
 
 ### Method
 
@@ -296,16 +808,6 @@ PUT
 /api/categories/:id
 ```
 
-### Full URL Example
-
-```text
-http://localhost:5000/api/categories/CATEGORY_ID
-```
-
-### Purpose
-
-Updates an existing category.
-
 ### Request Body
 
 ```json
@@ -316,17 +818,7 @@ Updates an existing category.
 }
 ```
 
-### Request Fields
-
-| Field | Type | Required | Description |
-|---|---|---|---|
-| name | String | No | Updated category name |
-| description | String | No | Updated description |
-| status | String | No | ACTIVE or INACTIVE |
-
 ### Success Response
-
-**Status Code: 200 OK**
 
 ```json
 {
@@ -341,31 +833,9 @@ Updates an existing category.
 }
 ```
 
-### Status Validation
-
-Only the following status values are accepted:
-
-```text
-ACTIVE
-INACTIVE
-```
-
-### Duplicate Category Name
-
-If another category already has the same name:
-
-**Status Code: 409 Conflict**
-
-```json
-{
-  "success": false,
-  "message": "Another category with this name already exists"
-}
-```
-
 ---
 
-# 8. Delete / Deactivate Category
+# 24. Deactivate Category
 
 ### Method
 
@@ -379,27 +849,15 @@ DELETE
 /api/categories/:id
 ```
 
-### Full URL Example
+The current implementation uses a soft-delete/deactivation approach.
+
+Instead of removing the category from MongoDB:
 
 ```text
-http://localhost:5000/api/categories/CATEGORY_ID
-```
-
-### Purpose
-
-The current implementation uses a **soft delete**.
-
-The category is not permanently deleted from the database.
-
-Instead, its status is changed:
-
-```text
-ACTIVE → INACTIVE
+status = INACTIVE
 ```
 
 ### Success Response
-
-**Status Code: 200 OK**
 
 ```json
 {
@@ -413,141 +871,78 @@ ACTIVE → INACTIVE
 }
 ```
 
-### Category Not Found
+---
 
-**Status Code: 404 Not Found**
+# 25. Category Search
 
-```json
-{
-  "success": false,
-  "message": "Category not found"
-}
+Search categories using:
+
+```text
+GET /api/categories?search=Electronics
+```
+
+The search is case-insensitive.
+
+---
+
+# 26. Category Status Filter
+
+Use:
+
+```text
+GET /api/categories?status=ACTIVE
+```
+
+or:
+
+```text
+GET /api/categories?status=INACTIVE
 ```
 
 ---
 
-# 9. Product APIs
+# 27. Inventory Management
 
-Product APIs are used to create, view, update and delete products.
+The inventory functionality manages stock using the Product model.
 
-## Product API Summary
+The following Product fields are used for inventory:
+
+```text
+stockQuantity
+minimumStock
+status
+```
+
+The inventory API provides:
+
+- Current stock
+- Low-stock detection
+- Inventory summary
+- Stock addition
+- Stock subtraction
+- Setting stock quantity
+- Inventory search
+- Quantity filtering
+
+---
+
+# 28. Inventory APIs
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/api/products` | Get all products |
-| GET | `/api/products/:id` | Get product by ID |
-| POST | `/api/products` | Create product |
-| PUT | `/api/products/:id` | Update product |
-| DELETE | `/api/products/:id` | Delete product |
-
-> **Note:** Search, status filtering, price filtering and low-stock filtering are query parameters of `GET /api/products`. They are not separate routes.
-
----
-
-# 10. Create Product
-
-### Method
-
-```text
-POST
-```
-
-### Endpoint
-
-```text
-/api/products
-```
-
-### Full URL
-
-```text
-http://localhost:5000/api/products
-```
-
-### Purpose
-
-Creates a new product.
-
-### Request Header
-
-```text
-Content-Type: application/json
-```
-
-### Request Body
-
-```json
-{
-  "productName": "Laptop",
-  "sku": "LAP-001",
-  "category": "CATEGORY_ID",
-  "purchasePrice": 40000,
-  "sellingPrice": 45000,
-  "taxRate": 18,
-  "stockQuantity": 10,
-  "minimumStock": 2,
-  "status": "ACTIVE"
-}
-```
-
-### Request Fields
-
-| Field | Type | Required | Description |
-|---|---|---|---|
-| productName | String | Yes | Product name |
-| sku | String | Yes | Unique product SKU |
-| category | ObjectId | Yes | Category reference |
-| purchasePrice | Number | Yes | Product purchase price |
-| sellingPrice | Number | Yes | Product selling price |
-| taxRate | Number | No | Tax percentage |
-| stockQuantity | Number | Yes | Current stock |
-| minimumStock | Number | Yes | Minimum stock level |
-| status | String | No | ACTIVE or INACTIVE |
-
-### Allowed Tax Rates
-
-```text
-0
-5
-12
-18
-```
-
-### Success Response
-
-**Status Code: 201 Created**
-
-```json
-{
-  "message": "Product created successfully",
-  "product": {
-    "_id": "PRODUCT_ID",
-    "productName": "Laptop",
-    "sku": "LAP-001",
-    "category": "CATEGORY_ID",
-    "purchasePrice": 40000,
-    "sellingPrice": 45000,
-    "taxRate": 18,
-    "stockQuantity": 10,
-    "minimumStock": 2,
-    "status": "ACTIVE"
-  }
-}
-```
-
-### Duplicate SKU
-
-**Status Code: 400 Bad Request**
-
-```json
-{
-  "message": "SKU already exists"
-}
-```
+| GET | `/api/inventory` | Get inventory |
+| GET | `/api/inventory/:id` | Get inventory item |
+| GET | `/api/inventory/low-stock` | Get low-stock products |
+| GET | `/api/inventory/summary` | Get inventory summary |
+| POST | `/api/inventory` | Create inventory item |
+| POST | `/api/inventory/bulk` | Create multiple inventory items |
+| PATCH | `/api/inventory/adjust` | Adjust stock |
+| PUT | `/api/inventory/:id` | Update inventory item |
+| DELETE | `/api/inventory/:id` | Delete inventory item |
 
 ---
 
-# 11. Get All Products
+# 29. Get Inventory
 
 ### Method
 
@@ -558,22 +953,18 @@ GET
 ### Endpoint
 
 ```text
-/api/products
+/api/inventory
 ```
 
-### Full URL
+### Example
 
 ```text
-http://localhost:5000/api/products
+GET http://localhost:5000/api/inventory
 ```
 
-### Purpose
+The response contains inventory information derived from products.
 
-Returns all products from the database.
-
-### Success Response
-
-**Status Code: 200 OK**
+Example:
 
 ```json
 [
@@ -581,207 +972,67 @@ Returns all products from the database.
     "_id": "PRODUCT_ID",
     "productName": "Laptop",
     "sku": "LAP-001",
-    "category": "CATEGORY_ID",
     "purchasePrice": 40000,
     "sellingPrice": 45000,
     "taxRate": 18,
     "stockQuantity": 10,
     "minimumStock": 2,
-    "status": "ACTIVE"
+    "status": "ACTIVE",
+    "lowStock": false,
+    "inventoryStatus": "IN_STOCK"
   }
 ]
 ```
 
 ---
 
-# 12. Search Products
+# 30. Inventory Search
 
-The search functionality is implemented inside the existing:
-
-```text
-GET /api/products
-```
-
-route.
-
-### Endpoint
+Search inventory by product name:
 
 ```text
-GET /api/products?search=value
-```
-
-### Example
-
-```text
-http://localhost:5000/api/products?search=Laptop
-```
-
-### Purpose
-
-Searches products using the product name.
-
-The search is case-insensitive.
-
-### Example
-
-```text
-GET /api/products?search=lap
+GET /api/inventory?search=Laptop
 ```
 
 ---
 
-# 13. Filter Products by Status
-
-The status filter is implemented inside the existing:
+# 31. Inventory Status Filter
 
 ```text
-GET /api/products
+GET /api/inventory?status=ACTIVE
 ```
 
-route.
-
-### Endpoint
+or:
 
 ```text
-GET /api/products?status=ACTIVE
-```
-
-### Example
-
-```text
-http://localhost:5000/api/products?status=ACTIVE
-```
-
-### Available Status
-
-```text
-ACTIVE
-INACTIVE
+GET /api/inventory?status=INACTIVE
 ```
 
 ---
 
-# 14. Filter Products by Minimum Price
+# 32. Inventory Quantity Filtering
 
-### Endpoint
+### Minimum Quantity
 
 ```text
-GET /api/products?minPrice=value
+GET /api/inventory?minQuantity=5
 ```
 
-### Example
+### Maximum Quantity
 
 ```text
-http://localhost:5000/api/products?minPrice=10000
+GET /api/inventory?maxQuantity=50
 ```
 
-### Purpose
-
-Returns products whose selling price is greater than or equal to the specified minimum price.
-
----
-
-# 15. Filter Products by Maximum Price
-
-### Endpoint
+### Quantity Range
 
 ```text
-GET /api/products?maxPrice=value
-```
-
-### Example
-
-```text
-http://localhost:5000/api/products?maxPrice=50000
-```
-
-### Purpose
-
-Returns products whose selling price is less than or equal to the specified maximum price.
-
----
-
-# 16. Filter Products by Price Range
-
-### Endpoint
-
-```text
-GET /api/products?minPrice=value&maxPrice=value
-```
-
-### Example
-
-```text
-http://localhost:5000/api/products?minPrice=10000&maxPrice=50000
-```
-
-### Purpose
-
-Returns products whose selling price is within the specified range.
-
----
-
-# 17. Get Low Stock Products
-
-The low-stock functionality is implemented inside the existing:
-
-```text
-GET /api/products
-```
-
-route.
-
-### Endpoint
-
-```text
-GET /api/products?lowStock=true
-```
-
-### Full URL
-
-```text
-http://localhost:5000/api/products?lowStock=true
-```
-
-### Purpose
-
-Returns products where the current stock is less than or equal to the minimum stock.
-
-### Low Stock Condition
-
-```text
-stockQuantity <= minimumStock
-```
-
-### Example
-
-```text
-stockQuantity = 2
-minimumStock = 5
-```
-
-Result:
-
-```text
-LOW STOCK
-```
-
-### Normal Stock Example
-
-```text
-stockQuantity = 10
-minimumStock = 5
-```
-
-Result:
-
-```text
-NORMAL STOCK
+GET /api/inventory?minQuantity=5&maxQuantity=50
 ```
 
 ---
 
-# 18. Get Product by ID
+# 33. Low Stock API
 
 ### Method
 
@@ -792,422 +1043,341 @@ GET
 ### Endpoint
 
 ```text
-/api/products/:id
+/api/inventory/low-stock
 ```
 
-### Full URL Example
+### Example
 
 ```text
-http://localhost:5000/api/products/PRODUCT_ID
+GET http://localhost:5000/api/inventory/low-stock
 ```
 
-### Purpose
-
-Returns a single product using its MongoDB ObjectId.
-
-### Success Response
-
-**Status Code: 200 OK**
-
-```json
-{
-  "_id": "PRODUCT_ID",
-  "productName": "Laptop",
-  "sku": "LAP-001",
-  "category": "CATEGORY_ID",
-  "purchasePrice": 40000,
-  "sellingPrice": 45000,
-  "taxRate": 18,
-  "stockQuantity": 10,
-  "minimumStock": 2,
-  "status": "ACTIVE"
-}
-```
-
-### Product Not Found
-
-**Status Code: 404 Not Found**
-
-```json
-{
-  "message": "Product not found"
-}
-```
-
----
-
-# 19. Update Product
-
-### Method
-
-```text
-PUT
-```
-
-### Endpoint
-
-```text
-/api/products/:id
-```
-
-### Full URL Example
-
-```text
-http://localhost:5000/api/products/PRODUCT_ID
-```
-
-### Purpose
-
-Updates an existing product.
-
-### Request Body
-
-```json
-{
-  "productName": "Updated Laptop",
-  "sellingPrice": 48000,
-  "taxRate": 18,
-  "stockQuantity": 15,
-  "minimumStock": 3,
-  "status": "ACTIVE"
-}
-```
-
-### Success Response
-
-**Status Code: 200 OK**
-
-```json
-{
-  "message": "Product updated successfully",
-  "product": {
-    "_id": "PRODUCT_ID",
-    "productName": "Updated Laptop",
-    "sellingPrice": 48000,
-    "taxRate": 18,
-    "stockQuantity": 15,
-    "minimumStock": 3,
-    "status": "ACTIVE"
-  }
-}
-```
-
----
-
-# 20. Delete Product
-
-### Method
-
-```text
-DELETE
-```
-
-### Endpoint
-
-```text
-/api/products/:id
-```
-
-### Full URL Example
-
-```text
-http://localhost:5000/api/products/PRODUCT_ID
-```
-
-### Purpose
-
-Deletes the product from the database.
-
-### Success Response
-
-**Status Code: 200 OK**
-
-```json
-{
-  "message": "Product deleted successfully"
-}
-```
-
-### Product Not Found
-
-**Status Code: 404 Not Found**
-
-```json
-{
-  "message": "Product not found"
-}
-```
-
----
-
-# 21. Product and Category Relationship
-
-Each product belongs to a category.
-
-The Product schema stores the category MongoDB ObjectId.
-
-### Relationship
-
-```text
-Category
-    |
-    | category _id
-    |
-    ↓
-Product
-```
-
-### Example Category
-
-```json
-{
-  "_id": "65abc123",
-  "name": "Electronics",
-  "description": "Electronic products",
-  "status": "ACTIVE"
-}
-```
-
-### Example Product
-
-```json
-{
-  "productName": "Laptop",
-  "sku": "LAP-001",
-  "category": "65abc123",
-  "purchasePrice": 40000,
-  "sellingPrice": 45000,
-  "taxRate": 18,
-  "stockQuantity": 10,
-  "minimumStock": 2,
-  "status": "ACTIVE"
-}
-```
-
-The product is associated with the Electronics category through the category ObjectId.
-
----
-
-# 22. Category Schema
-
-```text
-Category
-├── _id
-├── name
-├── description
-├── status
-├── createdAt
-└── updatedAt
-```
-
-### Category Fields
-
-| Field | Type | Required | Validation |
-|---|---|---|---|
-| name | String | Yes | 2-50 characters, unique |
-| description | String | No | Maximum 200 characters |
-| status | String | No | ACTIVE / INACTIVE |
-| createdAt | Date | Auto | Automatically generated |
-| updatedAt | Date | Auto | Automatically generated |
-
----
-
-# 23. Product Schema
-
-```text
-Product
-├── _id
-├── productName
-├── sku
-├── category
-├── purchasePrice
-├── sellingPrice
-├── taxRate
-├── stockQuantity
-├── minimumStock
-├── status
-├── createdAt
-└── updatedAt
-```
-
-### Product Fields
-
-| Field | Type | Required | Validation |
-|---|---|---|---|
-| productName | String | Yes | Product name |
-| sku | String | Yes | Unique SKU |
-| category | ObjectId | Yes | Category reference |
-| purchasePrice | Number | Yes | Minimum 0 |
-| sellingPrice | Number | Yes | Minimum 0 |
-| taxRate | Number | No | 0, 5, 12, 18 |
-| stockQuantity | Number | Yes | Minimum 0 |
-| minimumStock | Number | Yes | Minimum 0 |
-| status | String | No | ACTIVE / INACTIVE |
-| createdAt | Date | Auto | Automatically generated |
-| updatedAt | Date | Auto | Automatically generated |
-
----
-
-# 24. Category Search and Filtering
-
-The `GET /api/categories` route supports query parameters.
-
-### Search
-
-```text
-GET /api/categories?search=Electronics
-```
-
-### Status Filter
-
-```text
-GET /api/categories?status=ACTIVE
-```
-
-### Search + Status
-
-```text
-GET /api/categories?search=Electronics&status=ACTIVE
-```
-
----
-
-# 25. Product Search and Filtering
-
-The `GET /api/products` route supports the following query parameters:
-
-| Query Parameter | Example | Purpose |
-|---|---|---|
-| search | `?search=Laptop` | Search by product name |
-| status | `?status=ACTIVE` | Filter by product status |
-| minPrice | `?minPrice=10000` | Minimum selling price |
-| maxPrice | `?maxPrice=50000` | Maximum selling price |
-| lowStock | `?lowStock=true` | Find low-stock products |
-
-### Multiple Filters
-
-The query parameters can be combined.
-
-Example:
-
-```text
-GET /api/products?search=Laptop&status=ACTIVE
-```
-
-Another example:
-
-```text
-GET /api/products?minPrice=10000&maxPrice=50000&status=ACTIVE
-```
-
----
-
-# 26. Inventory Logic
-
-The Product collection currently stores:
-
-```text
-stockQuantity
-```
-
-and:
-
-```text
-minimumStock
-```
-
-### Low Stock Condition
+The low-stock condition is:
 
 ```text
 stockQuantity <= minimumStock
 ```
 
-### Example
+Example:
 
 ```text
-Stock Quantity = 3
-Minimum Stock = 5
+stockQuantity = 3
+minimumStock = 5
 ```
 
 Result:
 
 ```text
-LOW STOCK
+LOW_STOCK
 ```
 
 ---
 
-# 27. Inventory API Dependencies
+# 34. Inventory Summary
 
-Inventory stock changes can be connected with other modules.
-
-## Purchase Module
-
-When a purchase is completed:
+### Method
 
 ```text
-New Stock = Current Stock + Purchased Quantity
+GET
+```
+
+### Endpoint
+
+```text
+/api/inventory/summary
 ```
 
 ### Example
 
 ```text
+GET http://localhost:5000/api/inventory/summary
+```
+
+### Response
+
+```json
+{
+  "totalProducts": 10,
+  "totalStock": 125,
+  "lowStockCount": 3,
+  "inStockCount": 7
+}
+```
+
+### Summary Fields
+
+| Field | Description |
+|---|---|
+| totalProducts | Total number of products |
+| totalStock | Sum of stock quantities |
+| lowStockCount | Number of products at or below minimum stock |
+| inStockCount | Products that are not low stock |
+
+---
+
+# 35. Adjust Inventory
+
+### Method
+
+```text
+PATCH
+```
+
+### Endpoint
+
+```text
+/api/inventory/adjust
+```
+
+This endpoint supports:
+
+```text
+add
+subtract
+set
+```
+
+---
+
+## Add Stock
+
+Example:
+
+```json
+{
+  "productId": "PRODUCT_ID",
+  "quantity": 5,
+  "operation": "add"
+}
+```
+
+Calculation:
+
+```text
+Current Stock + Quantity
+```
+
+Example:
+
+```text
 Current Stock = 10
-Purchased Quantity = 5
+Quantity = 5
 
 New Stock = 15
 ```
 
-## Sales Module
+---
 
-When a sale is completed:
+# 36. Subtract Stock
 
-```text
-New Stock = Current Stock - Sold Quantity
+Example:
+
+```json
+{
+  "productId": "PRODUCT_ID",
+  "quantity": 3,
+  "operation": "subtract"
+}
 ```
 
-### Example
+Calculation:
+
+```text
+Current Stock - Quantity
+```
+
+Example:
 
 ```text
 Current Stock = 10
-Sold Quantity = 3
+Quantity = 3
 
 New Stock = 7
 ```
 
-## Negative Stock Prevention
+---
 
-Stock should never become negative.
+# 37. Set Stock
 
-### Example
+Example:
+
+```json
+{
+  "productId": "PRODUCT_ID",
+  "stockQuantity": 25,
+  "operation": "set"
+}
+```
+
+The stock quantity is directly changed to:
+
+```text
+25
+```
+
+---
+
+# 38. Negative Stock Prevention
+
+The backend prevents stock from becoming negative.
+
+Example:
 
 ```text
 Current Stock = 2
-Sold Quantity = 5
+Subtract = 5
 ```
 
-The operation should not be allowed because:
+The calculated stock would be:
 
 ```text
 2 - 5 = -3
 ```
 
+This operation is rejected.
+
+Response:
+
+```json
+{
+  "message": "Stock quantity cannot be negative"
+}
+```
+
 ---
 
-# 28. Common HTTP Status Codes
+# 39. Inventory Status
 
-| Status Code | Meaning |
+The inventory controller calculates:
+
+```text
+stockQuantity <= minimumStock
+```
+
+If true:
+
+```text
+lowStock = true
+inventoryStatus = "LOW_STOCK"
+```
+
+Otherwise:
+
+```text
+lowStock = false
+inventoryStatus = "IN_STOCK"
+```
+
+---
+
+# 40. Inventory Frontend
+
+The React inventory page provides:
+
+- Total Products card
+- Total Stock card
+- Low Stock card
+- In Stock card
+- Product/SKU search
+- Product status filter
+- Minimum quantity filter
+- Maximum quantity filter
+- Low Stock Only filter
+- Clear Filters
+- Refresh
+- Stock adjustment
+- Inventory table
+
+---
+
+# 41. Product Frontend
+
+The Product page provides:
+
+- Add Product
+- Edit Product
+- Delete Product
+- Product listing
+- Product search
+- Status filtering
+- Price filtering
+- Low-stock filtering
+- Category selection
+- Product stock display
+- Product status display
+
+---
+
+# 42. Category Frontend
+
+The Category page provides:
+
+- Add Category
+- Edit Category
+- Deactivate Category
+- Category listing
+- Search by category name
+- Search by description
+- Status filtering
+- Clear filters
+- Created date display
+
+---
+
+# 43. Validation and Error Handling
+
+The backend implements validation for important fields.
+
+### Product
+
+```text
+Product name required
+SKU required
+SKU unique
+Category required
+Purchase price >= 0
+Selling price >= 0
+Stock quantity >= 0
+Minimum stock >= 0
+Tax rate = 0, 5, 12 or 18
+Status = ACTIVE or INACTIVE
+```
+
+### Category
+
+```text
+Name required
+Name unique
+Name length: 2-50 characters
+Description maximum: 200 characters
+Status = ACTIVE or INACTIVE
+```
+
+### Inventory
+
+```text
+Product ID required
+Quantity cannot be negative
+Stock cannot become negative
+Operation must be add, subtract or set
+```
+
+---
+
+# 44. HTTP Status Codes
+
+| Status | Meaning |
 |---|---|
-| 200 | Request successful |
-| 201 | Resource created successfully |
-| 400 | Bad request |
+| 200 | Successful request |
+| 201 | Resource created |
+| 400 | Bad request / validation error |
 | 404 | Resource not found |
 | 409 | Duplicate resource |
 | 500 | Internal server error |
 
 ---
 
-# 29. Common Error Responses
+# 45. Common Error Responses
 
 ### Product Not Found
 
@@ -1243,49 +1413,144 @@ The operation should not be allowed because:
 }
 ```
 
-### Invalid Category Status
+### Negative Stock
 
 ```json
 {
-  "success": false,
-  "message": "Status must be ACTIVE or INACTIVE"
+  "message": "Stock quantity cannot be negative"
 }
 ```
 
 ---
 
-# 30. Postman Testing
+# 46. Running the Backend
 
-All APIs can be tested using Postman.
+Open PowerShell or terminal.
 
-## Step 1: Start Backend
+```bash
+cd server
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the backend:
+
+```bash
+node server.js
+```
+
+The server runs on:
+
+```text
+http://localhost:5000
+```
+
+---
+
+# 47. Running the Frontend
+
+Open another terminal.
+
+```bash
+cd client
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the React application:
+
+```bash
+npm run dev
+```
+
+Vite normally runs the frontend on:
+
+```text
+http://localhost:5173
+```
+
+---
+
+# 48. Environment Configuration
+
+The backend uses a `.env` file for environment configuration.
+
+Example:
+
+```env
+PORT=5000
+MONGO_URI=mongodb://reeshika:reeshi2005@ac-hgg8shj-shard-00-00.zncj0tq.mongodb.net:27017,ac-hgg8shj-shard-00-01.zncj0tq.mongodb.net:27017,ac-hgg8shj-shard-00-02.zncj0tq.mongodb.net:27017/billing_team2_test?tls=true&replicaSet=atlas-gd6pmi-shard-0&authSource=admin&retryWrites=true&w=majority
+```
+
+Do not commit actual MongoDB credentials or passwords to GitHub.
+
+---
+
+# 49. MongoDB Connection
+
+The MongoDB connection is configured in:
+
+```text
+server/config/db.js
+```
+
+The backend connects to MongoDB before starting normal database operations.
+
+The main database collections used by the module are:
+
+```text
+products
+categories
+```
+
+The project also contains an Inventory model, while the current inventory controller operates directly on Product stock fields.
+
+---
+
+# 50. Postman Testing
+
+All backend APIs can be tested using Postman.
+
+## Step 1 — Start Backend
 
 ```bash
 cd server
 node server.js
 ```
 
-If nodemon is configured:
-
-```bash
-npm run dev
-```
-
-## Step 2: Verify Server
-
-Open:
+## Step 2 — Test Server
 
 ```text
-http://localhost:5000
+GET http://localhost:5000
 ```
 
-## Step 3: Create Category
+Expected response:
+
+```json
+{
+  "message": "Billing Software Team 2 Backend is running"
+}
+```
+
+---
+
+# 51. Postman Product Testing
+
+### Create Category First
 
 ```text
 POST http://localhost:5000/api/categories
 ```
 
-Body → raw → JSON:
+Body:
 
 ```json
 {
@@ -1294,17 +1559,15 @@ Body → raw → JSON:
 }
 ```
 
-## Step 4: Copy Category ID
-
-After creating the category, copy:
+Copy the returned:
 
 ```text
 _id
 ```
 
-This Category ID is used when creating a product.
+---
 
-## Step 5: Create Product
+### Create Product
 
 ```text
 POST http://localhost:5000/api/products
@@ -1316,7 +1579,7 @@ Body:
 {
   "productName": "Laptop",
   "sku": "LAP-001",
-  "category": "COPIED_CATEGORY_ID",
+  "category": "CATEGORY_ID",
   "purchasePrice": 40000,
   "sellingPrice": 45000,
   "taxRate": 18,
@@ -1326,27 +1589,17 @@ Body:
 }
 ```
 
-## Step 6: Test Product APIs
+---
+
+# 52. Postman Product Test List
 
 ```text
-GET    /api/products
-GET    /api/products/:id
-POST   /api/products
-PUT    /api/products/:id
-DELETE /api/products/:id
+GET     /api/products
+GET     /api/products/:id
+POST    /api/products
+PUT     /api/products/:id
+DELETE  /api/products/:id
 ```
-
-## Step 7: Test Category APIs
-
-```text
-POST   /api/categories
-GET    /api/categories
-GET    /api/categories/:id
-PUT    /api/categories/:id
-DELETE /api/categories/:id
-```
-
-## Step 8: Test Product Query Parameters
 
 ### Search
 
@@ -1360,19 +1613,7 @@ GET /api/products?search=Laptop
 GET /api/products?status=ACTIVE
 ```
 
-### Minimum Price
-
-```text
-GET /api/products?minPrice=10000
-```
-
-### Maximum Price
-
-```text
-GET /api/products?maxPrice=50000
-```
-
-### Price Range
+### Price
 
 ```text
 GET /api/products?minPrice=10000&maxPrice=50000
@@ -1386,164 +1627,158 @@ GET /api/products?lowStock=true
 
 ---
 
-# 31. API Endpoint Quick Reference
-
-## Category APIs
+# 53. Postman Category Test List
 
 ```text
-POST   /api/categories
-GET    /api/categories
-GET    /api/categories/:id
-PUT    /api/categories/:id
-DELETE /api/categories/:id
+POST    /api/categories
+GET     /api/categories
+GET     /api/categories/:id
+PUT     /api/categories/:id
+DELETE  /api/categories/:id
 ```
 
-## Product APIs
+### Search
 
 ```text
-GET    /api/products
-GET    /api/products/:id
-POST   /api/products
-PUT    /api/products/:id
-DELETE /api/products/:id
+GET /api/categories?search=Electronics
 ```
 
-## Product Query Parameters
+### Status
 
 ```text
-GET /api/products?search=value
-GET /api/products?status=ACTIVE
-GET /api/products?minPrice=value
-GET /api/products?maxPrice=value
-GET /api/products?minPrice=value&maxPrice=value
-GET /api/products?lowStock=true
-```
-
-## Category Query Parameters
-
-```text
-GET /api/categories?search=value
 GET /api/categories?status=ACTIVE
 ```
 
 ---
 
-# 32. Backend File Structure
+# 54. Postman Inventory Test List
 
 ```text
-server/
-│
-├── config/
-│   └── db.js
-│
-├── models/
-│   ├── Product.js
-│   └── Category.js
-│
-├── controllers/
-│   ├── productController.js
-│   └── categoryController.js
-│
-├── routes/
-│   ├── productRoutes.js
-│   └── categoryRoutes.js
-│
-├── app.js
-├── server.js
-├── API_DOCUMENTATION.md
-├── package.json
-└── .env
+GET     /api/inventory
+GET     /api/inventory/:id
+GET     /api/inventory/low-stock
+GET     /api/inventory/summary
+POST    /api/inventory
+POST    /api/inventory/bulk
+PATCH   /api/inventory/adjust
+PUT     /api/inventory/:id
+DELETE  /api/inventory/:id
 ```
 
 ---
 
-# 33. API Development Status
+# 55. Git and GitHub Workflow
 
-## Completed
+The project follows a branch-based workflow.
 
-- MongoDB Atlas database connection
-- Product model
-- Category model
-- Product CRUD APIs
-- Category CRUD APIs
-- Product-category relationship
-- SKU uniqueness handling
-- Product search
-- Product status filtering
-- Product price filtering
-- Low-stock filtering
-- Category search
-- Category status filtering
-- Category soft delete/deactivation
-- Postman API testing
-- Backend API documentation
-
-## Pending / Integration
-
-- Inventory API
-- Purchase stock increase integration
-- Sales stock decrease integration
-- Negative stock prevention
-- Frontend integration
-- Dashboard low-stock integration
-
----
-
-# 34. Repository
-
-GitHub Repository:
+Recommended workflow:
 
 ```text
-https://github.com/yelchurureeshika/Billing-Software-System-Team-2
+Pull latest changes
+       ↓
+Create / switch to feature branch
+       ↓
+Develop feature
+       ↓
+Test locally
+       ↓
+Commit changes
+       ↓
+Push branch
+       ↓
+Create Pull Request
+       ↓
+Code Review
+       ↓
+Merge
+```
+
+Example:
+
+```bash
+git pull origin team2
+```
+
+Create a feature branch:
+
+```bash
+git checkout -b feature/product-api
+```
+
+Check status:
+
+```bash
+git status
+```
+
+Add changes:
+
+```bash
+git add .
+```
+
+Commit:
+
+```bash
+git commit -m "Implemented product APIs"
+```
+
+Push:
+
+```bash
+git push origin feature/product-api
 ```
 
 ---
 
-# 35. Team 2 Backend Responsibility
+# 61. Definition of Done
 
-The backend and database responsibilities include:
+The Team 2 module is considered ready when:
 
-- MongoDB database setup
-- Product schema
-- Category schema
-- Product CRUD APIs
-- Category CRUD APIs
-- Product-category relationship
-- SKU validation
-- Product search
-- Product filtering
-- Category search
-- Category filtering
-- Inventory management
-- Low-stock detection
-- Stock validation
-- Postman API testing
-- Backend API documentation
+- Product CRUD works
+- Category CRUD works
+- SKU uniqueness is handled
+- Inventory reflects stock changes
+- Negative stock is prevented
+- Low-stock products are identified
+- Frontend/API integration is completed
+- Postman tests are completed
+- GitHub branch is reviewed
+- Pull Request is created and merged
+- API documentation is maintained
 
 ---
 
-# 36. Conclusion
+# 62. Conclusion
 
-The Team 2 backend provides APIs for managing products and categories and provides the foundation for inventory management.
+The Team 2 Products, Categories & Inventory module provides the core product catalog and inventory functionality for the Billing Software System.
 
-The backend currently supports:
+The implementation provides:
 
-- Product CRUD operations
-- Category CRUD operations
-- Product-category relationship
-- Product search
-- Category search
-- Product status filtering
-- Category status filtering
-- Price filtering
-- Low-stock detection
-- SKU uniqueness
-- Category deactivation
-- MongoDB data management
-- Postman API testing
+```text
+Product Management
+        +
+Category Management
+        +
+Inventory Management
+        +
+Stock Adjustment
+        +
+Low Stock Detection
+        +
+Search & Filtering
+        +
+Validation
+        +
+React Frontend
+        +
+REST APIs
+        +
+MongoDB
+```
 
-The APIs can be integrated with the React frontend and other billing system modules.
+The module is designed to integrate with the purchase, sales, and dashboard modules of the overall Billing Software System.
 
 ---
 
-# End of API Documentation
+# End of Team 2 Documentation
