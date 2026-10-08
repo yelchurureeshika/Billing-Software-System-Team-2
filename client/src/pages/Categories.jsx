@@ -20,9 +20,6 @@ function Categories() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // =========================
-  // FETCH CATEGORIES
-  // =========================
   const fetchCategories = async () => {
     try {
       setLoading(true);
@@ -37,32 +34,23 @@ function Categories() {
         );
       }
 
-      // Backend returns:
-      // {
-      //   success: true,
-      //   count: ...,
-      //   data: [...]
-      // }
-
       setCategories(data.data || []);
     } catch (error) {
-      console.error("Fetch categories error:", error);
+      console.error(
+        "Fetch categories error:",
+        error
+      );
+
       setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // =========================
-  // LOAD CATEGORIES ON PAGE LOAD
-  // =========================
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  // =========================
-  // HANDLE FORM INPUT
-  // =========================
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -72,20 +60,18 @@ function Categories() {
     });
   };
 
-  // =========================
-  // ADD / UPDATE CATEGORY
-  // =========================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (!formData.name.trim()) {
       alert("Category name is required.");
       return;
     }
 
     if (formData.name.trim().length < 2) {
-      alert("Category name must be at least 2 characters.");
+      alert(
+        "Category name must be at least 2 characters."
+      );
       return;
     }
 
@@ -99,11 +85,10 @@ function Categories() {
         status: formData.status,
       };
 
-      // =========================
-      // UPDATE CATEGORY
-      // =========================
+      let response;
+
       if (editingId !== null) {
-        const response = await fetch(
+        response = await fetch(
           `${CATEGORY_API}/${editingId}`,
           {
             method: "PUT",
@@ -113,23 +98,8 @@ function Categories() {
             body: JSON.stringify(categoryData),
           }
         );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.message || "Failed to update category"
-          );
-        }
-
-        alert("Category updated successfully.");
-      }
-
-      // =========================
-      // ADD CATEGORY
-      // =========================
-      else {
-        const response = await fetch(CATEGORY_API, {
+      } else {
+        response = await fetch(CATEGORY_API, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -139,26 +109,34 @@ function Categories() {
             description: categoryData.description,
           }),
         });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.message || "Failed to create category"
-          );
-        }
-
-        alert("Category added successfully.");
       }
 
-      // Get latest data from database
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            (editingId !== null
+              ? "Failed to update category"
+              : "Failed to create category")
+        );
+      }
+
+      alert(
+        editingId !== null
+          ? "Category updated successfully."
+          : "Category added successfully."
+      );
+
       await fetchCategories();
 
-      // Reset form
       setFormData(emptyForm);
       setEditingId(null);
     } catch (error) {
-      console.error("Save category error:", error);
+      console.error(
+        "Save category error:",
+        error
+      );
 
       alert(error.message);
       setError(error.message);
@@ -167,9 +145,6 @@ function Categories() {
     }
   };
 
-  // =========================
-  // EDIT CATEGORY
-  // =========================
   const handleEdit = (category) => {
     setEditingId(category._id);
 
@@ -185,9 +160,6 @@ function Categories() {
     });
   };
 
-  // =========================
-  // DELETE / DEACTIVATE CATEGORY
-  // =========================
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
       "Are you sure you want to deactivate this category?"
@@ -211,102 +183,92 @@ function Categories() {
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Failed to deactivate category"
+          data.message ||
+            "Failed to deactivate category"
         );
       }
 
-      alert("Category deactivated successfully.");
+      alert(
+        "Category deactivated successfully."
+      );
 
-      // Refresh from database
       await fetchCategories();
     } catch (error) {
-      console.error("Delete category error:", error);
+      console.error(
+        "Delete category error:",
+        error
+      );
 
       alert(error.message);
       setError(error.message);
     }
   };
 
-  // =========================
-  // CANCEL EDIT
-  // =========================
   const handleCancel = () => {
     setFormData(emptyForm);
     setEditingId(null);
   };
 
-  // =========================
-  // SEARCH + STATUS FILTER
-  // =========================
-  const filteredCategories = categories.filter((category) => {
-    const searchText = search.toLowerCase().trim();
+  const filteredCategories =
+    categories.filter((category) => {
+      const searchText =
+        search.toLowerCase().trim();
 
-    const matchesSearch =
-      category.name
-        ?.toLowerCase()
-        .includes(searchText) ||
-      category.description
-        ?.toLowerCase()
-        .includes(searchText);
+      const matchesSearch =
+        category.name
+          ?.toLowerCase()
+          .includes(searchText) ||
+        category.description
+          ?.toLowerCase()
+          .includes(searchText);
 
-    const matchesStatus =
-      statusFilter === "ALL" ||
-      category.status === statusFilter;
+      const matchesStatus =
+        statusFilter === "ALL" ||
+        category.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
-  });
+      return (
+        matchesSearch &&
+        matchesStatus
+      );
+    });
 
-  // =========================
-  // CLEAR FILTERS
-  // =========================
   const clearFilters = () => {
     setSearch("");
     setStatusFilter("ALL");
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container category-page">
 
-      {/* =========================
-          PAGE HEADER
-      ========================= */}
       <div className="page-header">
-        <h1>Categories</h1>
-        <p>Manage product categories</p>
+        <div>
+          <h1>Categories</h1>
+          <p>Manage product categories</p>
+        </div>
       </div>
 
-      {/* =========================
-          ERROR MESSAGE
-      ========================= */}
       {error && (
-        <div
-          style={{
-            background: "#fef2f2",
-            color: "#b91c1c",
-            border: "1px solid #fecaca",
-            padding: "12px 16px",
-            borderRadius: "8px",
-            marginBottom: "20px",
-          }}
-        >
+        <div className="error-message">
           <strong>Error:</strong> {error}
         </div>
       )}
 
-      {/* =========================
-          ADD / EDIT CATEGORY
-      ========================= */}
-      <div className="card">
-        <h2>
-          {editingId !== null
-            ? "Edit Category"
-            : "Add Category"}
-        </h2>
+      {/* ADD / EDIT CATEGORY */}
+
+      <div className="page-card">
+
+        <div className="section-header">
+          <h2>
+            {editingId !== null
+              ? "Edit Category"
+              : "Add Category"}
+          </h2>
+        </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="form-grid">
 
-            {/* CATEGORY NAME */}
+          <div className="category-form-grid">
+
             <div className="form-group">
               <label>Category Name</label>
 
@@ -320,7 +282,6 @@ function Categories() {
               />
             </div>
 
-            {/* DESCRIPTION */}
             <div className="form-group">
               <label>Description</label>
 
@@ -334,7 +295,6 @@ function Categories() {
               />
             </div>
 
-            {/* STATUS */}
             <div className="form-group">
               <label>Status</label>
 
@@ -355,7 +315,6 @@ function Categories() {
 
           </div>
 
-          {/* FORM BUTTONS */}
           <div className="form-actions">
 
             <button
@@ -382,18 +341,20 @@ function Categories() {
             )}
 
           </div>
+
         </form>
       </div>
 
-      {/* =========================
-          SEARCH & FILTERS
-      ========================= */}
-      <div className="card">
-        <h2>Search & Filters</h2>
+      {/* SEARCH & FILTERS */}
 
-        <div className="filters">
+      <div className="page-card">
 
-          {/* SEARCH */}
+        <div className="section-header">
+          <h2>Search & Filters</h2>
+        </div>
+
+        <div className="category-filter-grid">
+
           <div className="form-group">
             <label>Search Category</label>
 
@@ -407,7 +368,6 @@ function Categories() {
             />
           </div>
 
-          {/* STATUS */}
           <div className="form-group">
             <label>Status</label>
 
@@ -433,8 +393,10 @@ function Categories() {
 
         </div>
 
-        {/* CLEAR FILTERS */}
-        <div className="form-actions">
+        <div className="filter-bottom-row">
+
+          <div></div>
+
           <button
             type="button"
             className="btn-secondary"
@@ -442,18 +404,30 @@ function Categories() {
           >
             Clear Filters
           </button>
+
         </div>
+
       </div>
 
-      {/* =========================
-          CATEGORY LIST
-      ========================= */}
-      <div className="card">
-        <h2>Category List</h2>
+      {/* CATEGORY LIST */}
+
+      <div className="page-card">
+
+        <div className="table-header">
+          <div>
+            <h2>Category List</h2>
+
+            <p>
+              Showing {filteredCategories.length} of{" "}
+              {categories.length} categories
+            </p>
+          </div>
+        </div>
 
         <div className="table-container">
 
-          <table>
+          <table className="management-table category-list-table">
+
             <thead>
               <tr>
                 <th>Category Name</th>
@@ -466,7 +440,6 @@ function Categories() {
 
             <tbody>
 
-              {/* LOADING */}
               {loading ? (
                 <tr>
                   <td
@@ -477,8 +450,6 @@ function Categories() {
                   </td>
                 </tr>
               ) : filteredCategories.length === 0 ? (
-
-                /* NO DATA */
                 <tr>
                   <td
                     colSpan="5"
@@ -487,82 +458,82 @@ function Categories() {
                     No categories found.
                   </td>
                 </tr>
-
               ) : (
+                filteredCategories.map(
+                  (category) => (
+                    <tr key={category._id}>
 
-                /* CATEGORY DATA */
-                filteredCategories.map((category) => (
+                      <td>
+                        <strong>
+                          {category.name}
+                        </strong>
+                      </td>
 
-                  <tr key={category._id}>
+                      <td>
+                        {category.description ||
+                          "No description"}
+                      </td>
 
-                    {/* NAME */}
-                    <td>
-                      <strong>
-                        {category.name}
-                      </strong>
-                    </td>
-
-                    {/* DESCRIPTION */}
-                    <td>
-                      {category.description ||
-                        "No description"}
-                    </td>
-
-                    {/* STATUS */}
-                    <td>
-                      <span
-                        className={
-                          category.status === "ACTIVE"
-                            ? "status-active"
-                            : "status-inactive"
-                        }
-                      >
-                        {category.status}
-                      </span>
-                    </td>
-
-                    {/* CREATED DATE */}
-                    <td>
-                      {category.createdAt
-                        ? new Date(
-                            category.createdAt
-                          ).toLocaleDateString("en-IN")
-                        : "-"}
-                    </td>
-
-                    {/* ACTIONS */}
-                    <td>
-                      <div className="action-buttons">
-
-                        <button
-                          type="button"
-                          className="btn-edit"
-                          onClick={() =>
-                            handleEdit(category)
+                      <td>
+                        <span
+                          className={
+                            category.status ===
+                            "ACTIVE"
+                              ? "status-badge active"
+                              : "status-badge inactive"
                           }
                         >
-                          Edit
-                        </button>
+                          {category.status}
+                        </span>
+                      </td>
 
-                        <button
-                          type="button"
-                          className="btn-delete"
-                          onClick={() =>
-                            handleDelete(category._id)
-                          }
-                        >
-                          Deactivate
-                        </button>
+                      <td>
+                        {category.createdAt
+                          ? new Date(
+                              category.createdAt
+                            ).toLocaleDateString(
+                              "en-IN"
+                            )
+                          : "-"}
+                      </td>
 
-                      </div>
-                    </td>
+                      <td>
+                        <div className="action-buttons">
 
-                  </tr>
+                          <button
+                            type="button"
+                            className="btn-edit"
+                            onClick={() =>
+                              handleEdit(
+                                category
+                              )
+                            }
+                          >
+                            Edit
+                          </button>
 
-                ))
+                          <button
+                            type="button"
+                            className="btn-delete"
+                            onClick={() =>
+                              handleDelete(
+                                category._id
+                              )
+                            }
+                          >
+                            Deactivate
+                          </button>
+
+                        </div>
+                      </td>
+
+                    </tr>
+                  )
+                )
               )}
 
             </tbody>
+
           </table>
 
         </div>

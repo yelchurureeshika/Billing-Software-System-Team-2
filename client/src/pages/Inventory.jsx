@@ -4,6 +4,7 @@ const INVENTORY_API = "http://localhost:5000/api/inventory";
 
 function Inventory() {
   const [inventory, setInventory] = useState([]);
+
   const [summary, setSummary] = useState({
     totalProducts: 0,
     totalStock: 0,
@@ -77,7 +78,7 @@ function Inventory() {
     fetchSummary();
   }, []);
 
-  // Local search and filters
+  // Search and filters
   const filteredInventory = useMemo(() => {
     return inventory.filter((item) => {
       const searchText = search.trim().toLowerCase();
@@ -225,62 +226,71 @@ function Inventory() {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container inventory-page">
+
+      {/* Page Header */}
       <div className="page-header">
         <div>
           <h1>Inventory</h1>
           <p>Manage product stock and inventory levels.</p>
         </div>
-
-        <button
-          className="btn-primary"
-          onClick={() => {
-            fetchInventory();
-            fetchSummary();
-          }}
-        >
-          Refresh
-        </button>
       </div>
 
       {/* Summary Cards */}
       <div className="inventory-summary">
+
         <div className="summary-card">
-          <div className="summary-title">Total Products</div>
+          <div className="summary-title">
+            Total Products
+          </div>
+
           <div className="summary-value">
             {summary.totalProducts}
           </div>
         </div>
 
         <div className="summary-card">
-          <div className="summary-title">Total Stock</div>
+          <div className="summary-title">
+            Total Stock
+          </div>
+
           <div className="summary-value">
             {summary.totalStock}
           </div>
         </div>
 
         <div className="summary-card">
-          <div className="summary-title">Low Stock</div>
+          <div className="summary-title">
+            Low Stock
+          </div>
+
           <div className="summary-value">
             {summary.lowStockCount}
           </div>
         </div>
 
         <div className="summary-card">
-          <div className="summary-title">In Stock</div>
+          <div className="summary-title">
+            In Stock
+          </div>
+
           <div className="summary-value">
             {summary.inStockCount}
           </div>
         </div>
+
       </div>
 
       {/* Filters */}
       <div className="card filter-card">
+
         <h2>Search & Filter Inventory</h2>
 
         <div className="filter-grid">
+
           <div className="form-group">
             <label>Search Product / SKU</label>
+
             <input
               type="text"
               placeholder="Search by product name or SKU"
@@ -291,9 +301,12 @@ function Inventory() {
 
           <div className="form-group">
             <label>Status</label>
+
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) =>
+                setStatusFilter(e.target.value)
+              }
             >
               <option value="">All Status</option>
               <option value="ACTIVE">Active</option>
@@ -303,34 +316,45 @@ function Inventory() {
 
           <div className="form-group">
             <label>Minimum Stock</label>
+
             <input
               type="number"
               min="0"
               placeholder="Min quantity"
               value={minQuantity}
-              onChange={(e) => setMinQuantity(e.target.value)}
+              onChange={(e) =>
+                setMinQuantity(e.target.value)
+              }
             />
           </div>
 
           <div className="form-group">
             <label>Maximum Stock</label>
+
             <input
               type="number"
               min="0"
               placeholder="Max quantity"
               value={maxQuantity}
-              onChange={(e) => setMaxQuantity(e.target.value)}
+              onChange={(e) =>
+                setMaxQuantity(e.target.value)
+              }
             />
           </div>
+
         </div>
 
         <div className="inventory-filter-actions">
+
           <label className="checkbox-label">
             <input
               type="checkbox"
               checked={lowStockOnly}
-              onChange={(e) => setLowStockOnly(e.target.checked)}
+              onChange={(e) =>
+                setLowStockOnly(e.target.checked)
+              }
             />
+
             Show Low Stock Only
           </label>
 
@@ -341,7 +365,9 @@ function Inventory() {
           >
             Clear Filters
           </button>
+
         </div>
+
       </div>
 
       {/* Error */}
@@ -353,9 +379,11 @@ function Inventory() {
 
       {/* Inventory Table */}
       <div className="card table-card">
+
         <div className="table-header">
           <div>
             <h2>Inventory List</h2>
+
             <p>
               Showing {filteredInventory.length} of{" "}
               {inventory.length} products
@@ -373,7 +401,9 @@ function Inventory() {
           </div>
         ) : (
           <div className="product-table-container">
+
             <table className="product-table">
+
               <thead>
                 <tr>
                   <th>Product</th>
@@ -390,6 +420,7 @@ function Inventory() {
               </thead>
 
               <tbody>
+
                 {filteredInventory.map((item) => (
                   <tr
                     key={item._id}
@@ -399,8 +430,11 @@ function Inventory() {
                         : ""
                     }
                   >
+
                     <td>
-                      <strong>{item.productName}</strong>
+                      <strong>
+                        {item.productName}
+                      </strong>
                     </td>
 
                     <td>{item.sku}</td>
@@ -457,21 +491,29 @@ function Inventory() {
                         Adjust Stock
                       </button>
                     </td>
+
                   </tr>
                 ))}
+
               </tbody>
+
             </table>
+
           </div>
         )}
+
       </div>
 
       {/* Adjust Stock Modal */}
       {showModal && selectedProduct && (
         <div className="modal-overlay">
+
           <div className="modal">
+
             <h2>Adjust Stock</h2>
 
             <div className="modal-product">
+
               <strong>
                 {selectedProduct.productName}
               </strong>
@@ -479,6 +521,7 @@ function Inventory() {
               <span>
                 SKU: {selectedProduct.sku}
               </span>
+
             </div>
 
             <div className="modal-stock">
@@ -489,7 +532,9 @@ function Inventory() {
             </div>
 
             <form onSubmit={handleAdjustStock}>
+
               <div className="form-group">
+
                 <label>Operation</label>
 
                 <select
@@ -499,6 +544,7 @@ function Inventory() {
                   }
                   disabled={adjusting}
                 >
+
                   <option value="add">
                     Add Stock
                   </option>
@@ -510,10 +556,13 @@ function Inventory() {
                   <option value="set">
                     Set Stock
                   </option>
+
                 </select>
+
               </div>
 
               <div className="form-group">
+
                 <label>
                   {operation === "set"
                     ? "New Stock Quantity"
@@ -532,6 +581,7 @@ function Inventory() {
                   disabled={adjusting}
                   required
                 />
+
               </div>
 
               {operation === "subtract" &&
@@ -540,8 +590,9 @@ function Inventory() {
                     Remaining Stock:{" "}
                     {Math.max(
                       0,
-                      Number(selectedProduct.stockQuantity) -
-                        Number(quantity)
+                      Number(
+                        selectedProduct.stockQuantity
+                      ) - Number(quantity)
                     )}
                   </p>
                 )}
@@ -550,12 +601,14 @@ function Inventory() {
                 quantity !== "" && (
                   <p className="stock-preview">
                     New Stock:{" "}
-                    {Number(selectedProduct.stockQuantity) +
-                      Number(quantity)}
+                    {Number(
+                      selectedProduct.stockQuantity
+                    ) + Number(quantity)}
                   </p>
                 )}
 
               <div className="modal-actions">
+
                 <button
                   type="button"
                   className="btn-secondary"
@@ -574,11 +627,16 @@ function Inventory() {
                     ? "Updating..."
                     : "Update Stock"}
                 </button>
+
               </div>
+
             </form>
+
           </div>
+
         </div>
       )}
+
     </div>
   );
 }
